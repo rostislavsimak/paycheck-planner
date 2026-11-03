@@ -85,6 +85,7 @@ details.card>summary{cursor:pointer;font-weight:700;list-style-position:inside}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 .btn.danger{color:var(--danger)}
+a.btn{text-decoration:none;box-sizing:border-box}
 .btn.soft{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
 .btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
 .btn.big{width:100%;padding:16px;font-size:1.08rem;border-radius:16px}
@@ -417,6 +418,24 @@ de:{ios:["Kopiere den iPhone-Link oben.","Öffne Kurzbefehle → Automation → 
  btn:["Tippe in Kurzbefehle auf + für einen neuen Kurzbefehl namens „Schnelle Ausgabe“.","Füge „Nach Eingabe fragen“ hinzu (Typ: Zahl, Frage: Wie viel?).","Füge „URL“ mit dem iPhone-Link hinzu; ersetze AMOUNT durch „Bereitgestellte Eingabe“ und lösche „&note=MERCHANT“.","Füge „URLs öffnen“ hinzu.","Starte ihn, wie du magst: Einstellungen → Bedienungshilfen → Tippen → Auf Rückseite tippen (doppelt auf die Rückseite tippen), ein Widget auf dem Home-Bildschirm oder „Hey Siri, Schnelle Ausgabe“."],
  and:["Installiere MacroDroid (kostenlos) und kopiere den Android-Link oben.","Neues Makro → Auslöser: Benachrichtigung → wähle deine Bank oder Google Wallet.","Aktion: Website öffnen / URL → Link einfügen und NOTIFICATION durch den magischen Text [notification] ersetzen.","Speichern. Die App liest den Betrag aus der Benachrichtigung und öffnet sich bereit zum Speichern."]}
 };
+
+/* ready-made iCloud shortcuts (per language; falls back to it) */
+const SC={it:{quick:["Spesa veloce","https://www.icloud.com/shortcuts/047495237fe641b496aadaa4975ce24e"],pay:["Registra Apple Pay","https://www.icloud.com/shortcuts/989c902da0224a0aa351fe79fc140d8d"]}};
+Object.assign(I18N.en,{"al.addPay":"➕ Add Apple Pay shortcut","al.addQuick":"➕ Add quick-spend shortcut","al.diy":"Build it yourself (links)"});
+Object.assign(I18N.it,{"al.addPay":"➕ Aggiungi comando Apple Pay","al.addQuick":"➕ Aggiungi comando Spesa veloce","al.diy":"Fai da te (link)"});
+Object.assign(I18N.es,{"al.addPay":"➕ Añadir atajo de Apple Pay","al.addQuick":"➕ Añadir atajo de gasto rápido","al.diy":"Hazlo tú mismo (enlaces)"});
+Object.assign(I18N.fr,{"al.addPay":"➕ Ajouter le raccourci Apple Pay","al.addQuick":"➕ Ajouter le raccourci dépense rapide","al.diy":"Le faire soi-même (liens)"});
+Object.assign(I18N.de,{"al.addPay":"➕ Apple-Pay-Kurzbefehl hinzufügen","al.addQuick":"➕ Schnellausgabe-Kurzbefehl hinzufügen","al.diy":"Selbst bauen (Links)"});
+AUTOLOG.en.ios=["Tap “Add Apple Pay shortcut” above, then “Add Shortcut”.","Open Shortcuts → Automation → + → Transaction.","Choose your cards, select “Run Immediately”, tap Next.","Pick the “{0}” shortcut. Done: after each Apple Pay payment the app opens ready — pick a category and Save.","No “Transaction” in the list? Use “Wallet” → your card → Run Immediately → “{1}”: the iPhone asks the amount right after you pay."];
+AUTOLOG.en.btn=["Tap “Add quick-spend shortcut” above, then “Add Shortcut”.","Launch it however you like: Settings → Accessibility → Touch → Back Tap (double-tap the back of the phone), a Home Screen widget, or “Hey Siri, {1}”."];
+AUTOLOG.it.ios=["Tocca «Aggiungi comando Apple Pay» qui sopra, poi «Aggiungi comando rapido».","Apri Comandi → Automazione → + → Transazione.","Scegli le tue carte, seleziona «Esegui immediatamente», tocca Avanti.","Scegli il comando «{0}». Fatto: dopo ogni pagamento Apple Pay l'app si apre già compilata, scegli la categoria e Salva.","Non trovi «Transazione»? Usa «Wallet» → la tua carta → Esegui immediatamente → «{1}»: l'iPhone ti chiede l'importo appena paghi."];
+AUTOLOG.it.btn=["Tocca «Aggiungi comando Spesa veloce» qui sopra, poi «Aggiungi comando rapido».","Avvialo come preferisci: Impostazioni → Accessibilità → Tocco → Tocca retro (doppio tocco sul retro del telefono), un widget nella Home, oppure «Ehi Siri, {1}»."];
+AUTOLOG.es.ios=["Toca «Añadir atajo de Apple Pay» arriba y luego «Añadir atajo».","Abre Atajos → Automatización → + → Transacción.","Elige tus tarjetas, selecciona «Ejecutar inmediatamente», toca Siguiente.","Elige el atajo «{0}». Listo: tras cada pago con Apple Pay la app se abre rellenada; elige categoría y Guardar.","¿No aparece «Transacción»? Usa «Wallet» → tu tarjeta → Ejecutar inmediatamente → «{1}»: el iPhone te pide el importe justo al pagar."];
+AUTOLOG.es.btn=["Toca «Añadir atajo de gasto rápido» arriba y luego «Añadir atajo».","Lánzalo como quieras: Ajustes → Accesibilidad → Tocar → Toque posterior (doble toque en la parte trasera), un widget en la pantalla de inicio, o «Oye Siri, {1}»."];
+AUTOLOG.fr.ios=["Touchez « Ajouter le raccourci Apple Pay » ci-dessus, puis « Ajouter le raccourci ».","Ouvrez Raccourcis → Automatisation → + → Transaction.","Choisissez vos cartes, sélectionnez « Exécuter immédiatement », touchez Suivant.","Choisissez le raccourci « {0} ». C'est fait : après chaque paiement Apple Pay, l'app s'ouvre pré-remplie ; choisissez la catégorie et Enregistrez.","Pas de « Transaction » dans la liste ? Utilisez « Wallet » → votre carte → Exécuter immédiatement → « {1} » : l'iPhone demande le montant juste après le paiement."];
+AUTOLOG.fr.btn=["Touchez « Ajouter le raccourci dépense rapide » ci-dessus, puis « Ajouter le raccourci ».","Lancez-le comme vous voulez : Réglages → Accessibilité → Toucher → Toucher le dos (double tape au dos du téléphone), un widget sur l'écran d'accueil, ou « Dis Siri, {1} »."];
+AUTOLOG.de.ios=["Tippe oben auf „Apple-Pay-Kurzbefehl hinzufügen“, dann auf „Kurzbefehl hinzufügen“.","Öffne Kurzbefehle → Automation → + → Transaktion.","Wähle deine Karten, dann „Sofort ausführen“, tippe Weiter.","Wähle den Kurzbefehl „{0}“. Fertig: Nach jeder Apple-Pay-Zahlung öffnet sich die App ausgefüllt – Kategorie wählen, Speichern.","Keine „Transaktion“ in der Liste? Nutze „Wallet“ → deine Karte → Sofort ausführen → „{1}“: Das iPhone fragt direkt nach dem Bezahlen nach dem Betrag."];
+AUTOLOG.de.btn=["Tippe oben auf „Schnellausgabe-Kurzbefehl hinzufügen“, dann auf „Kurzbefehl hinzufügen“.","Starte ihn, wie du magst: Einstellungen → Bedienungshilfen → Tippen → Auf Rückseite tippen (doppelt auf die Rückseite tippen), ein Widget auf dem Home-Bildschirm oder „Hey Siri, {1}“."];
 GUIDE.en.splice(3,0,["Automatic logging","More → Setup → Automatic logging. On iPhone, a Shortcuts automation opens the app after every Apple Pay payment with amount and shop already filled in. On Android, MacroDroid does the same from bank notifications. The app remembers the category you pick for each shop."]);
 GUIDE.it.splice(3,0,["Registrazione automatica","Altro → Impostazioni → Registrazione automatica. Su iPhone un'automazione di Comandi apre l'app dopo ogni pagamento Apple Pay con importo e negozio già compilati. Su Android lo fa MacroDroid dalle notifiche della banca. L'app ricorda la categoria che scegli per ogni negozio."]);
 GUIDE.es.splice(3,0,["Registro automático","Más → Ajustes → Registro automático. En iPhone, una automatización de Atajos abre la app tras cada pago con Apple Pay con importe y comercio ya rellenados. En Android lo hace MacroDroid con las notificaciones del banco. La app recuerda la categoría que eliges para cada comercio."]);
@@ -579,6 +598,7 @@ function renderTabs(){
 }
 function go(x){tab=x;showAllExp=false;showAllBills=false;try{history.replaceState(null,"","#"+x);}catch(e){}render();window.scrollTo(0,0);}
 function stateClass(left,income){if(left<0)return"over";if(income>0&&left<income*0.1)return"tight";return"ok";}
+const scLink=k=>((SC[lang()]||SC.en||SC.it)[k]);
 const autoLink=k=>{const base=location.href.split("#")[0].split("?")[0];return base+(k==="ios"?"#add?amount=AMOUNT&note=MERCHANT":"#add?text=NOTIFICATION");};
 const back=()=>`<button class="link" data-tab="more">${T("b.back")}</button>`;
 const demoBanner=()=>demo?`<div class="demo-banner">${T("tr.demo")}</div>`:"";
@@ -706,8 +726,11 @@ function vSettings(){
       <button class="btn primary big" type="submit">${T("se.save")}</button>
     </form></section>
   <section class="card" id="autoCard"><h2>${T("al.title")}</h2><p class="small muted">${T("al.sub")}</p>
-    ${[["ios",autoLink("ios")],["and",autoLink("and")]].map(([k,u])=>`<label class="field"><span>${T(k==="ios"?"al.iosLink":"al.andLink")}</span><span class="linkbox"><input readonly value="${esc(u)}" id="lnk-${k}"><button type="button" class="btn" data-copy="lnk-${k}">${T("al.copy")}</button></span></label>`).join("")}
-    ${["ios","btn","and"].map(k=>`<details class="topic"><summary>${T("al."+k)}</summary><ol class="steps-list">${((AUTOLOG[lang()]||AUTOLOG.en)[k]).map(x=>`<li>${esc(x)}</li>`).join("")}</ol></details>`).join("")}
+    <a class="btn primary wide" href="${esc(scLink("pay")[1])}" target="_blank" rel="noopener">${T("al.addPay")}</a>
+    <a class="btn soft wide" href="${esc(scLink("quick")[1])}" target="_blank" rel="noopener">${T("al.addQuick")}</a>
+    ${["ios","btn"].map(k=>`<details class="topic"><summary>${T("al."+k)}</summary><ol class="steps-list">${((AUTOLOG[lang()]||AUTOLOG.en)[k]).map(x=>`<li>${esc(x.split("{0}").join(scLink("pay")[0]).split("{1}").join(scLink("quick")[0]))}</li>`).join("")}</ol></details>`).join("")}
+    <details class="topic"><summary>${T("al.and")}</summary><label class="field" style="margin-top:8px"><span>${T("al.andLink")}</span><span class="linkbox"><input readonly value="${esc(autoLink("and"))}" id="lnk-and"><button type="button" class="btn" data-copy="lnk-and">${T("al.copy")}</button></span></label><ol class="steps-list">${((AUTOLOG[lang()]||AUTOLOG.en).and).map(x=>`<li>${esc(x)}</li>`).join("")}</ol></details>
+    <details class="topic"><summary>${T("al.diy")}</summary><label class="field" style="margin-top:8px"><span>${T("al.iosLink")}</span><span class="linkbox"><input readonly value="${esc(autoLink("ios"))}" id="lnk-ios"><button type="button" class="btn" data-copy="lnk-ios">${T("al.copy")}</button></span></label></details>
     <p class="small muted">${T("al.note")}</p></section>
   <section class="card" id="backupCard"><h2>${T("se.backup")}</h2><p class="small muted">${T("se.backupSub")}</p>
     <button class="btn primary wide" data-act="export">${T("se.dl")}</button><label class="btn wide">${T("se.restore")}<input type="file" id="importFile" accept="application/json,.json" hidden></label></section>
