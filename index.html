@@ -420,7 +420,7 @@ de:{ios:["Kopiere den iPhone-Link oben.","Öffne Kurzbefehle → Automation → 
 };
 
 /* ready-made iCloud shortcuts (per language; falls back to it) */
-const SC={it:{quick:["Spesa veloce","https://www.icloud.com/shortcuts/047495237fe641b496aadaa4975ce24e"],pay:["Registra Apple Pay","https://www.icloud.com/shortcuts/989c902da0224a0aa351fe79fc140d8d"]}};
+const SC={en:{quick:["Quick Spend","https://www.icloud.com/shortcuts/b6b615d84e9d413cabe32bb8d870807d"],pay:["Log Apple Pay","https://www.icloud.com/shortcuts/f0780e7208b141c3b682b79671ede40a"]},it:{quick:["Spesa veloce","https://www.icloud.com/shortcuts/047495237fe641b496aadaa4975ce24e"],pay:["Registra Apple Pay","https://www.icloud.com/shortcuts/989c902da0224a0aa351fe79fc140d8d"]}};
 Object.assign(I18N.en,{"al.addPay":"➕ Add Apple Pay shortcut","al.addQuick":"➕ Add quick-spend shortcut","al.diy":"Build it yourself (links)"});
 Object.assign(I18N.it,{"al.addPay":"➕ Aggiungi comando Apple Pay","al.addQuick":"➕ Aggiungi comando Spesa veloce","al.diy":"Fai da te (link)"});
 Object.assign(I18N.es,{"al.addPay":"➕ Añadir atajo de Apple Pay","al.addQuick":"➕ Añadir atajo de gasto rápido","al.diy":"Hazlo tú mismo (enlaces)"});
@@ -598,7 +598,7 @@ function renderTabs(){
 }
 function go(x){tab=x;showAllExp=false;showAllBills=false;try{history.replaceState(null,"","#"+x);}catch(e){}render();window.scrollTo(0,0);}
 function stateClass(left,income){if(left<0)return"over";if(income>0&&left<income*0.1)return"tight";return"ok";}
-const scLink=k=>((SC[lang()]||SC.en||SC.it)[k]);
+const scLink=k=>((SC[lang()]||SC.en)[k]);
 const autoLink=k=>{const base=location.href.split("#")[0].split("?")[0];return base+(k==="ios"?"#add?amount=AMOUNT&note=MERCHANT":"#add?text=NOTIFICATION");};
 const back=()=>`<button class="link" data-tab="more">${T("b.back")}</button>`;
 const demoBanner=()=>demo?`<div class="demo-banner">${T("tr.demo")}</div>`:"";
