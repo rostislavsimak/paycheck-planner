@@ -125,6 +125,11 @@ td{font-variant-numeric:tabular-nums}
 .empty{padding:18px;text-align:center;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:calc(100% - 32px)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.act{pointer-events:auto;display:flex;align-items:center;gap:12px}
+.toast button{border:0;background:transparent;color:inherit;font-weight:800;text-decoration:underline;cursor:pointer;padding:4px}
+.linkbox{display:flex;gap:8px}.linkbox input{font-size:.8rem;color:var(--muted)}
+ol.steps-list{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;line-height:1.5}
+.from{background:var(--accent-soft);color:var(--accent);border-radius:12px;padding:8px 12px;font-weight:700;text-align:center}
 /* sheets & modal */
 .sheet-back{position:fixed;inset:0;background:var(--scrim);z-index:70;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--surface);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:12px 18px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;max-height:92vh;overflow:auto;animation:up .2s ease-out}
@@ -389,6 +394,34 @@ FAQ.it[8]=["Come ricomincio da zero?","Altro → Impostazioni → Cancella tutto
 FAQ.es[8]=["¿Cómo empiezo de cero?","Más → Ajustes → Borrar todo (toca dos veces). Antes descarga una copia si quizá quieras recuperar los datos."];
 FAQ.fr[8]=["Comment tout recommencer ?","Plus → Réglages → Tout effacer (touchez deux fois). Téléchargez d'abord une sauvegarde si besoin."];
 FAQ.de[8]=["Wie fange ich neu an?","Mehr → Einstellungen → Alles löschen (zweimal tippen). Lade vorher eine Sicherung herunter, falls du die Daten noch brauchst."];
+/* auto-log: labels + setup steps */
+Object.assign(I18N.en,{"al.title":"⚡ Automatic logging","al.sub":"Log purchases without typing. Set it up once (5 minutes).","al.iosLink":"iPhone link","al.andLink":"Android link","al.copy":"Copy","al.copied":"Link copied","al.ios":"iPhone · every Apple Pay payment","al.btn":"iPhone · quick button (Back Tap, widget, Siri)","al.and":"Android · bank notifications","al.note":"On iPhone the link opens in Safari. If purchases don't show up in the Home Screen app, use the app from Safari instead (save it as a bookmark).","al.from":"From your payment ⚡","b.undo":"Undo"});
+Object.assign(I18N.it,{"al.title":"⚡ Registrazione automatica","al.sub":"Registra le spese senza scrivere. Si imposta una volta sola (5 minuti).","al.iosLink":"Link iPhone","al.andLink":"Link Android","al.copy":"Copia","al.copied":"Link copiato","al.ios":"iPhone · ogni pagamento Apple Pay","al.btn":"iPhone · pulsante veloce (Tocca retro, widget, Siri)","al.and":"Android · notifiche della banca","al.note":"Su iPhone il link si apre in Safari. Se le spese non compaiono nell'app della schermata Home, usa l'app direttamente da Safari (salvala nei preferiti).","al.from":"Dal tuo pagamento ⚡","b.undo":"Annulla"});
+Object.assign(I18N.es,{"al.title":"⚡ Registro automático","al.sub":"Registra gastos sin escribir. Se configura una vez (5 minutos).","al.iosLink":"Enlace iPhone","al.andLink":"Enlace Android","al.copy":"Copiar","al.copied":"Enlace copiado","al.ios":"iPhone · cada pago con Apple Pay","al.btn":"iPhone · botón rápido (Toque posterior, widget, Siri)","al.and":"Android · notificaciones del banco","al.note":"En iPhone el enlace se abre en Safari. Si los gastos no aparecen en la app de la pantalla de inicio, usa la app desde Safari (guárdala en favoritos).","al.from":"De tu pago ⚡","b.undo":"Deshacer"});
+Object.assign(I18N.fr,{"al.title":"⚡ Saisie automatique","al.sub":"Notez vos dépenses sans rien taper. À configurer une seule fois (5 minutes).","al.iosLink":"Lien iPhone","al.andLink":"Lien Android","al.copy":"Copier","al.copied":"Lien copié","al.ios":"iPhone · chaque paiement Apple Pay","al.btn":"iPhone · bouton rapide (Toucher le dos, widget, Siri)","al.and":"Android · notifications de la banque","al.note":"Sur iPhone, le lien s'ouvre dans Safari. Si les dépenses n'apparaissent pas dans l'app de l'écran d'accueil, utilisez l'app depuis Safari (ajoutez-la aux favoris).","al.from":"Depuis votre paiement ⚡","b.undo":"Annuler"});
+Object.assign(I18N.de,{"al.title":"⚡ Automatisch erfassen","al.sub":"Ausgaben erfassen ohne Tippen. Einmal einrichten (5 Minuten).","al.iosLink":"iPhone-Link","al.andLink":"Android-Link","al.copy":"Kopieren","al.copied":"Link kopiert","al.ios":"iPhone · jede Apple-Pay-Zahlung","al.btn":"iPhone · Schnellknopf (Rückseite tippen, Widget, Siri)","al.and":"Android · Bank-Benachrichtigungen","al.note":"Auf dem iPhone öffnet sich der Link in Safari. Erscheinen Ausgaben nicht in der Home-Bildschirm-App, nutze die App direkt in Safari (als Lesezeichen).","al.from":"Aus deiner Zahlung ⚡","b.undo":"Rückgängig"});
+const AUTOLOG={
+en:{ios:["Copy the iPhone link above.","Open Shortcuts → Automation → + → Transaction.","Choose your cards, select “Run Immediately”, tap Next → New Blank Automation.","Add the “URL” action and paste the link. Replace AMOUNT with the “Amount” variable and MERCHANT with “Merchant”.","Add the “Open URLs” action. Done: after each Apple Pay payment the app opens ready — pick a category and Save."],
+ btn:["In Shortcuts tap + for a new shortcut and name it “Quick spend”.","Add “Ask for Input” (type: Number, prompt: How much?).","Add “URL” with the iPhone link; replace AMOUNT with “Provided Input” and delete “&note=MERCHANT”.","Add “Open URLs”.","Launch it however you like: Settings → Accessibility → Touch → Back Tap (double-tap the back of the phone), a Home Screen widget, or “Hey Siri, Quick spend”."],
+ and:["Install MacroDroid (free) and copy the Android link above.","New macro → Trigger: Notification → choose your bank or Google Wallet.","Action: Open website / URL → paste the link and replace NOTIFICATION with the magic text [notification].","Save. The app reads the amount from the notification and opens ready to save."]},
+it:{ios:["Copia il link iPhone qui sopra.","Apri Comandi → Automazione → + → Transazione.","Scegli le tue carte, seleziona «Esegui immediatamente», tocca Avanti → Nuova automazione vuota.","Aggiungi l'azione «URL» e incolla il link. Sostituisci AMOUNT con la variabile «Importo» e MERCHANT con «Esercente».","Aggiungi l'azione «Apri URL». Fatto: dopo ogni pagamento Apple Pay l'app si apre già compilata, scegli la categoria e Salva."],
+ btn:["In Comandi tocca + per un nuovo comando e chiamalo «Spesa veloce».","Aggiungi «Richiedi input» (tipo: Numero, domanda: Quanto?).","Aggiungi «URL» con il link iPhone; sostituisci AMOUNT con «Input fornito» e cancella «&note=MERCHANT».","Aggiungi «Apri URL».","Avvialo come preferisci: Impostazioni → Accessibilità → Tocco → Tocca retro (doppio tocco sul retro del telefono), un widget nella Home, oppure «Ehi Siri, Spesa veloce»."],
+ and:["Installa MacroDroid (gratis) e copia il link Android qui sopra.","Nuova macro → Attivatore: Notifica → scegli la tua banca o Google Wallet.","Azione: Apri sito web / URL → incolla il link e sostituisci NOTIFICATION con il testo magico [notification].","Salva. L'app legge l'importo dalla notifica e si apre pronta da salvare."]},
+es:{ios:["Copia el enlace de iPhone de arriba.","Abre Atajos → Automatización → + → Transacción.","Elige tus tarjetas, selecciona «Ejecutar inmediatamente», toca Siguiente → Nueva automatización en blanco.","Añade la acción «URL» y pega el enlace. Sustituye AMOUNT por la variable «Importe» y MERCHANT por «Comercio».","Añade la acción «Abrir URL». Listo: tras cada pago con Apple Pay la app se abre rellenada; elige categoría y Guardar."],
+ btn:["En Atajos toca + para crear un atajo y llámalo «Gasto rápido».","Añade «Solicitar entrada» (tipo: Número, pregunta: ¿Cuánto?).","Añade «URL» con el enlace de iPhone; sustituye AMOUNT por «Entrada proporcionada» y borra «&note=MERCHANT».","Añade «Abrir URL».","Lánzalo como quieras: Ajustes → Accesibilidad → Tocar → Toque posterior (doble toque en la parte trasera), un widget en la pantalla de inicio, o «Oye Siri, Gasto rápido»."],
+ and:["Instala MacroDroid (gratis) y copia el enlace de Android de arriba.","Nueva macro → Disparador: Notificación → elige tu banco o Google Wallet.","Acción: Abrir sitio web / URL → pega el enlace y sustituye NOTIFICATION por el texto mágico [notification].","Guarda. La app lee el importe de la notificación y se abre lista para guardar."]},
+fr:{ios:["Copiez le lien iPhone ci-dessus.","Ouvrez Raccourcis → Automatisation → + → Transaction.","Choisissez vos cartes, sélectionnez « Exécuter immédiatement », touchez Suivant → Nouvelle automatisation vierge.","Ajoutez l'action « URL » et collez le lien. Remplacez AMOUNT par la variable « Montant » et MERCHANT par « Commerçant ».","Ajoutez l'action « Ouvrir les URL ». C'est fait : après chaque paiement Apple Pay, l'app s'ouvre pré-remplie ; choisissez la catégorie et Enregistrez."],
+ btn:["Dans Raccourcis, touchez + pour un nouveau raccourci nommé « Dépense rapide ».","Ajoutez « Demander une entrée » (type : Nombre, question : Combien ?).","Ajoutez « URL » avec le lien iPhone ; remplacez AMOUNT par « Entrée fournie » et supprimez « &note=MERCHANT ».","Ajoutez « Ouvrir les URL ».","Lancez-le comme vous voulez : Réglages → Accessibilité → Toucher → Toucher le dos (double tape au dos du téléphone), un widget sur l'écran d'accueil, ou « Dis Siri, Dépense rapide »."],
+ and:["Installez MacroDroid (gratuit) et copiez le lien Android ci-dessus.","Nouvelle macro → Déclencheur : Notification → choisissez votre banque ou Google Wallet.","Action : Ouvrir un site web / URL → collez le lien et remplacez NOTIFICATION par le texte magique [notification].","Enregistrez. L'app lit le montant dans la notification et s'ouvre prête à enregistrer."]},
+de:{ios:["Kopiere den iPhone-Link oben.","Öffne Kurzbefehle → Automation → + → Transaktion.","Wähle deine Karten, dann „Sofort ausführen“, tippe Weiter → Neue leere Automation.","Füge die Aktion „URL“ hinzu und füge den Link ein. Ersetze AMOUNT durch die Variable „Betrag“ und MERCHANT durch „Händler“.","Füge die Aktion „URLs öffnen“ hinzu. Fertig: Nach jeder Apple-Pay-Zahlung öffnet sich die App ausgefüllt – Kategorie wählen, Speichern."],
+ btn:["Tippe in Kurzbefehle auf + für einen neuen Kurzbefehl namens „Schnelle Ausgabe“.","Füge „Nach Eingabe fragen“ hinzu (Typ: Zahl, Frage: Wie viel?).","Füge „URL“ mit dem iPhone-Link hinzu; ersetze AMOUNT durch „Bereitgestellte Eingabe“ und lösche „&note=MERCHANT“.","Füge „URLs öffnen“ hinzu.","Starte ihn, wie du magst: Einstellungen → Bedienungshilfen → Tippen → Auf Rückseite tippen (doppelt auf die Rückseite tippen), ein Widget auf dem Home-Bildschirm oder „Hey Siri, Schnelle Ausgabe“."],
+ and:["Installiere MacroDroid (kostenlos) und kopiere den Android-Link oben.","Neues Makro → Auslöser: Benachrichtigung → wähle deine Bank oder Google Wallet.","Aktion: Website öffnen / URL → Link einfügen und NOTIFICATION durch den magischen Text [notification] ersetzen.","Speichern. Die App liest den Betrag aus der Benachrichtigung und öffnet sich bereit zum Speichern."]}
+};
+GUIDE.en.splice(3,0,["Automatic logging","More → Setup → Automatic logging. On iPhone, a Shortcuts automation opens the app after every Apple Pay payment with amount and shop already filled in. On Android, MacroDroid does the same from bank notifications. The app remembers the category you pick for each shop."]);
+GUIDE.it.splice(3,0,["Registrazione automatica","Altro → Impostazioni → Registrazione automatica. Su iPhone un'automazione di Comandi apre l'app dopo ogni pagamento Apple Pay con importo e negozio già compilati. Su Android lo fa MacroDroid dalle notifiche della banca. L'app ricorda la categoria che scegli per ogni negozio."]);
+GUIDE.es.splice(3,0,["Registro automático","Más → Ajustes → Registro automático. En iPhone, una automatización de Atajos abre la app tras cada pago con Apple Pay con importe y comercio ya rellenados. En Android lo hace MacroDroid con las notificaciones del banco. La app recuerda la categoría que eliges para cada comercio."]);
+GUIDE.fr.splice(3,0,["Saisie automatique","Plus → Réglages → Saisie automatique. Sur iPhone, une automatisation Raccourcis ouvre l'app après chaque paiement Apple Pay avec montant et commerce déjà remplis. Sur Android, MacroDroid fait de même depuis les notifications de la banque. L'app retient la catégorie choisie pour chaque commerce."]);
+GUIDE.de.splice(3,0,["Automatisch erfassen","Mehr → Einstellungen → Automatisch erfassen. Auf dem iPhone öffnet eine Kurzbefehle-Automation die App nach jeder Apple-Pay-Zahlung mit Betrag und Händler. Auf Android macht MacroDroid das über Bank-Benachrichtigungen. Die App merkt sich die Kategorie, die du je Händler wählst."]);
 </script>
 <script>
 (function(){
@@ -425,7 +458,7 @@ const catE=c=>CAT_E[c]||"•";
 
 /* ---------- state ---------- */
 function blank(){return{v:2,onboarded:false,tourSeen:false,settings:{currency:detectCur(),lang:detectLang(),freq:"biweekly",payAmount:0,anchor:iso(today()),extraDebt:0,strategy:"snowball",theme:"auto",palette:"sage"},
-  categories:CATS.slice(),buckets:{},bills:[],debts:[],goals:[],expenses:[],paid:{},saved:{},incomeAdj:{}};}
+  categories:CATS.slice(),buckets:{},bills:[],debts:[],goals:[],expenses:[],paid:{},saved:{},incomeAdj:{},merchantCats:{}};}
 let demo=false;
 let S=load();
 function migrate(d){
@@ -536,15 +569,17 @@ function monthLabel(n){const d=new Date(today().getFullYear(),today().getMonth()
 
 /* ---------- ui helpers ---------- */
 let tab=(location.hash||"").slice(1);if(!TABS.includes(tab)&&!SUB.includes(tab))tab="today";
+let pre=null;
 let selCat=null,yearSel=null,sheetCtx=null,showAllExp=false,showAllBills=false;
 const $=s=>document.querySelector(s);
-function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("show"),2000);}
+function toast(msg,undo){const el=$("#toast");el.textContent=msg;el.classList.toggle("act",!!undo);if(undo){const b=document.createElement("button");b.textContent=t("b.undo");b.onclick=()=>{undo();el.classList.remove("show","act");};el.appendChild(b);}el.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("show","act"),undo?6000:2000);}
 function applyTheme(){document.documentElement.setAttribute("data-palette",PALS[S.settings.palette]?S.settings.palette:"sage");const th=S.settings.theme;if(th==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",th);}
 function renderTabs(){
   $("#tabs").innerHTML=TABS.map(k=>{const on=k===tab||(k==="more"&&SUB.includes(tab));return `<button data-tab="${k}" ${on?'aria-current="page"':""}><span class="ni" aria-hidden="true">${ICON[k]}</span><span>${T("nav."+k)}</span></button>`;}).join("");
 }
 function go(x){tab=x;showAllExp=false;showAllBills=false;try{history.replaceState(null,"","#"+x);}catch(e){}render();window.scrollTo(0,0);}
 function stateClass(left,income){if(left<0)return"over";if(income>0&&left<income*0.1)return"tight";return"ok";}
+const autoLink=k=>{const base=location.href.split("#")[0].split("?")[0];return base+(k==="ios"?"#add?amount=AMOUNT&note=MERCHANT":"#add?text=NOTIFICATION");};
 const back=()=>`<button class="link" data-tab="more">${T("b.back")}</button>`;
 const demoBanner=()=>demo?`<div class="demo-banner">${T("tr.demo")}</div>`:"";
 
@@ -670,6 +705,10 @@ function vSettings(){
       <label class="field"><span>${T("se.theme")}</span><select id="sTheme">${["auto","light","dark"].map(k=>`<option value="${k}" ${k===st.theme?"selected":""}>${T("th."+k)}</option>`).join("")}</select></label></div>
       <button class="btn primary big" type="submit">${T("se.save")}</button>
     </form></section>
+  <section class="card" id="autoCard"><h2>${T("al.title")}</h2><p class="small muted">${T("al.sub")}</p>
+    ${[["ios",autoLink("ios")],["and",autoLink("and")]].map(([k,u])=>`<label class="field"><span>${T(k==="ios"?"al.iosLink":"al.andLink")}</span><span class="linkbox"><input readonly value="${esc(u)}" id="lnk-${k}"><button type="button" class="btn" data-copy="lnk-${k}">${T("al.copy")}</button></span></label>`).join("")}
+    ${["ios","btn","and"].map(k=>`<details class="topic"><summary>${T("al."+k)}</summary><ol class="steps-list">${((AUTOLOG[lang()]||AUTOLOG.en)[k]).map(x=>`<li>${esc(x)}</li>`).join("")}</ol></details>`).join("")}
+    <p class="small muted">${T("al.note")}</p></section>
   <section class="card" id="backupCard"><h2>${T("se.backup")}</h2><p class="small muted">${T("se.backupSub")}</p>
     <button class="btn primary wide" data-act="export">${T("se.dl")}</button><label class="btn wide">${T("se.restore")}<input type="file" id="importFile" accept="application/json,.json" hidden></label></section>
   <details class="card"><summary>${T("se.limits")}</summary><p class="small muted">${T("se.limitsSub")}</p>
@@ -692,18 +731,19 @@ function sheet(title,body){$("#modalRoot").innerHTML=`<div class="sheet-back"><d
 function closeSheet(){$("#modalRoot").innerHTML="";sheetCtx=null;}
 const actions=(id)=>`<button class="btn primary big" type="submit">${T("b.save")}</button>${id?`<button class="btn danger wide" type="button" data-del="1">${T("b.delete")}</button>`:""}<button class="btn ghost wide" type="button" data-close="1">${T("b.cancel")}</button>`;
 function focusFirst(sel){setTimeout(()=>{const a=$(sel);if(a)a.focus();},60);}
-function openSpend(){
+function openSpend(p){
+  p=p&&typeof p==="object"?p:null;if(p&&p.cat)selCat=p.cat;
   if(!selCat||!S.categories.includes(selCat))selCat=S.categories[0];
   const main=S.categories.filter(c=>MAIN_CATS.includes(c)||!CATS.includes(c)),extra=S.categories.filter(c=>CATS.includes(c)&&!MAIN_CATS.includes(c));
   const cb=c=>`<button type="button" class="cat" data-cat="${esc(c)}" aria-pressed="${c===selCat}"><span class="e" aria-hidden="true">${catE(c)}</span>${esc(catLabel(c))}</button>`;
   sheetCtx={type:"spend"};
   sheet(t("sh.spend"),`<form id="spendForm" class="stack" autocomplete="off">
-    <input id="expAmt" class="amount-in" inputmode="decimal" placeholder="0" aria-label="${T("f.amount")}">
+    ${p?`<div class="from">${T("al.from")}</div>`:""}<input id="expAmt" class="amount-in" inputmode="decimal" placeholder="0" aria-label="${T("f.amount")}" value="${p&&p.amount?esc(Number(p.amount).toFixed(2).replace(".",(0.5).toLocaleString(loc()).charAt(1))):""}">
     <div class="catgrid" role="group" aria-label="${T("t.cat")}">${main.map(cb).join("")}</div>
     ${extra.length?`<details ${extra.includes(selCat)?"open":""}><summary class="small muted">${T("sh.morecats")}</summary><div class="catgrid" style="margin-top:8px">${extra.map(cb).join("")}</div></details>`:""}
-    <details><summary class="small muted">${T("sh.details")}</summary><div class="stack" style="margin-top:8px"><input id="expNote" placeholder="${T("f.notePh")}" aria-label="${T("f.note")}"><input id="expDate" type="date" value="${iso(today())}" aria-label="${T("f.date")}"></div></details>
+    <details ${p&&p.note?"open":""}><summary class="small muted">${T("sh.details")}</summary><div class="stack" style="margin-top:8px"><input id="expNote" placeholder="${T("f.notePh")}" aria-label="${T("f.note")}" value="${p&&p.note?esc(p.note):""}"><input id="expDate" type="date" value="${iso(today())}" aria-label="${T("f.date")}"></div></details>
     ${actions()}</form>`);
-  focusFirst("#expAmt");
+  focusFirst(p&&p.amount?"#spendForm button[type=submit]":"#expAmt");
 }
 function openExp(id){const e=S.expenses.find(x=>x.id===id);if(!e)return;sheetCtx={type:"exp",id};
   sheet(t("sh.exp"),`<div class="stack"><div class="center"><div style="font-size:2.2rem">${catE(e.category)}</div><div style="font-size:2rem;font-weight:800">${money(num(e.amount))}</div><div class="muted">${esc(e.note||catLabel(e.category))} · ${fmtDW(parse(e.date))}</div></div>
@@ -825,6 +865,7 @@ document.addEventListener("click",ev=>{
     return;}
   if(ds.palette){S.settings.palette=ds.palette;if(tour){tour.real.settings.palette=ds.palette;showStep();}else{save();render();}const b=document.querySelector('.swatch[data-palette="'+ds.palette+'"]');if(b)b.focus({preventScroll:true});return;}
   if(tour)return;
+  if(ds.copy){const i=document.getElementById(ds.copy);if(!i)return;const done=()=>toast(t("al.copied"));if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(i.value).then(done,()=>{i.select();document.execCommand("copy");done();});else{i.select();document.execCommand("copy");done();}return;}
   if(ds.close){closeSheet();return;}
   if(ds.tab){closeSheet();go(ds.tab);return;}
   if(ds.open){const f={spend:openSpend,exp:openExp,bill:openBill,debt:openDebt,goal:openGoal}[ds.open];if(f)f(ds.id);return;}
@@ -867,7 +908,7 @@ document.addEventListener("submit",ev=>{
   ev.preventDefault();const f=ev.target;if(tour)return;const c=sheetCtx||{};
   const upsert=(arr,obj,msgEdit,msgAdd)=>{if(c.id){Object.assign(S[arr].find(x=>x.id===c.id),obj);toast(t(msgEdit));}else{S[arr].push(Object.assign({id:uid()},obj));toast(t(msgAdd));}save();closeSheet();render();};
   if(f.id==="spendForm"){const amt=num($("#expAmt").value);if(amt<=0){toast(t("toast.amount"));$("#expAmt").focus();return;}
-    S.expenses.push({id:uid(),date:($("#expDate")&&$("#expDate").value)||iso(today()),amount:amt,category:selCat,note:($("#expNote")&&$("#expNote").value.trim())||""});save();closeSheet();tab="today";render();toast(t("toast.logged",money(amt)));return;}
+    const note=($("#expNote")&&$("#expNote").value.trim())||"";const e={id:uid(),date:($("#expDate")&&$("#expDate").value)||iso(today()),amount:amt,category:selCat,note};S.expenses.push(e);rememberCat(note,selCat);save();closeSheet();tab="today";render();toast(t("toast.logged",money(amt)),()=>{S.expenses=S.expenses.filter(x=>x.id!==e.id);save();render();});return;}
   if(f.id==="billForm"){upsert("bills",{name:$("#bName").value.trim(),amount:num($("#bAmt").value),dueDay:Math.min(31,Math.max(1,parseInt($("#bDay").value)||1)),category:$("#bCat").value,autopay:$("#bAuto").checked},"bi.saved","bi.added");return;}
   if(f.id==="debtForm"){upsert("debts",{name:$("#dName").value.trim(),balance:num($("#dBal").value),apr:num($("#dApr").value),minPayment:num($("#dMin").value),dueDay:Math.min(31,Math.max(1,parseInt($("#dDay").value)||1))},"d.saved","d.added");return;}
   if(f.id==="goalForm"){upsert("goals",{name:$("#gName").value.trim(),target:num($("#gTarget").value),saved:num($("#gSaved").value),perPaycheck:num($("#gPer").value)},"s.saved","s.added");return;}
@@ -881,13 +922,51 @@ document.addEventListener("keydown",ev=>{
   else if(ev.key==="ArrowRight"&&!typing&&tour.i<STEPS.length-1){tour.i++;showStep();}
   else if(ev.key==="ArrowLeft"&&!typing&&tour.i>0){tour.i--;showStep();}
 });
-window.addEventListener("hashchange",()=>{const x=location.hash.slice(1);if(tour)return;if((TABS.includes(x)||SUB.includes(x))&&x!==tab){tab=x;render();}});
+window.addEventListener("hashchange",()=>{const x=location.hash.slice(1);if(tour||/^add/.test(x))return;if((TABS.includes(x)||SUB.includes(x))&&x!==tab){tab=x;render();}});
 window.addEventListener("storage",e=>{if(e.key===KEY&&!demo){S=load();render();}});
 window.addEventListener("resize",()=>{if(tour){clearTimeout(window.__rt);window.__rt=setTimeout(showStep,150);}});
+
+/* ---------- quick add from link (Apple Pay Shortcuts, MacroDroid, quick button) ---------- */
+const KW={groceries:["lidl","aldi","esselunga","coop","conad","carrefour","eurospin","pam ","penny","spar","walmart","tesco","kroger","rewe","edeka","mercadona","sainsbury","asda","whole foods","trader joe","costco","safeway","netto","kaufland","dia ","auchan","leclerc","intermarch","supermerc","supermarket"],
+ gas:["shell","esso","eni","q8","bp ","chevron","exxon","tamoil","repsol","aral","totalenergies","texaco","circle k","benzin","carbur","fuel"],
+ eating:["starbucks","chipotle","taco","wendy","five guys","pret","costa","nando","autogrill","mcdonald","burger","kfc","subway","domino","pizz","bar ","caff","cafe","coffee","ristor","restaurant","trattoria","osteria","sushi","deliveroo","uber eats","glovo","just eat","doordash","grubhub","wolt","lieferando","bäck","bakery","panific"],
+ fun:["cinema","steam","playstation","xbox","nintendo","ticketmaster","eventbrite","museum","museo","bowling"],
+ household:["ikea","leroy","brico","obi ","home depot","lowe","action","tiger","maisons du monde"],
+ health:["farmacia","pharmacy","apotheke","pharmacie","cvs","walgreens","boots","dm "],
+ personal:["zara","h&m","primark","sephora","douglas","uniqlo","decathlon","nike","adidas","parrucch","barber","salon"],
+ pets:["zooplus","petco","petsmart","arcaplanet","fressnapf"],
+ kids:["toys","giocattol","prenatal","mothercare"]};
+const normM=s=>String(s||"").toLowerCase().replace(/[^a-z0-9à-ÿ& ]/g," ").replace(/\s+/g," ").trim();
+function rememberCat(note,cat){const k=normM(note);if(k&&k.length<60){S.merchantCats=S.merchantCats||{};S.merchantCats[k]=cat;}}
+function guessCat(note){const k=normM(note);if(!k)return null;const mc=S.merchantCats||{};if(mc[k]&&S.categories.includes(mc[k]))return mc[k];
+  const kk=" "+k+" ";for(const c in KW){if(S.categories.includes(c)&&KW[c].some(w=>{const x=w.trim();return x.length<=3?kk.includes(" "+x+" "):kk.includes(x);}))return c;}return null;}
+function amountFromText(txt){const s=String(txt||"");
+  const m=s.match(/(?:[€$£¥₹]|EUR|USD|GBP|CHF)\s?(\d[\d.,\s]*\d|\d)/i)||s.match(/(\d[\d.,\s]*\d|\d)\s?(?:[€$£¥₹]|EUR|USD|GBP|CHF)/i)||s.match(/\d+[.,]\d{2}/);
+  return m?num(m[1]||m[0]):0;}
+function quickAdd(){
+  const h=location.hash||"";if(!/^#add\b/.test(h))return false;
+  const q=new URLSearchParams(h.slice(h.indexOf("?")+1));
+  try{history.replaceState(null,"","#today");}catch(e){}
+  tab="today";
+  let amount=num(q.get("amount")||"");let note=(q.get("note")||q.get("merchant")||"").trim();
+  const text=q.get("text");
+  if(!amount&&text)amount=amountFromText(text);
+  if(!note&&text){const mm=String(text).match(/\b(?:presso|at|bei|chez|en|da|from|à)\s+(.{2,32}?)(?=\s+(?:con|with|mit|avec|il|on|am|le|el|per|for|carta|card|karte)\b|[,.;]|\s*$)/i);if(mm)note=mm[1].trim();}
+  if(!note&&text)note=String(text).replace(/(?:[€$£¥₹]|EUR|USD|GBP|CHF)?\s?\d[\d.,\s]*\d\s?(?:[€$£¥₹]|EUR|USD|GBP|CHF)?/gi," ").replace(/\s+/g," ").trim().slice(0,40);
+  if(/^(MERCHANT|NOTIFICATION)$/i.test(note))note="";
+  const qc=q.get("cat");const cat=(qc&&S.categories.includes(qc))?qc:(guessCat(note)||(S.categories.includes("other")?"other":null));
+  if(!S.tourSeen||tour){pre=null;return false;}
+  $("#modalRoot").innerHTML="";render();
+  if(q.get("auto")==="1"&&amount>0&&cat){const e={id:uid(),date:iso(today()),amount,category:cat,note};S.expenses.push(e);save();render();
+    toast(t("toast.logged",money(amount)),()=>{S.expenses=S.expenses.filter(x=>x.id!==e.id);save();render();});return true;}
+  openSpend({amount:amount||"",note,cat});return true;
+}
+window.addEventListener("hashchange",()=>{if(/^#add\b/.test(location.hash))quickAdd();});
 
 render();
 if(!S.tourSeen)startTour();
 else if(!S.onboarded){wz=0;renderWizard();}
+else quickAdd();
 })();
 </script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:"){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script>
