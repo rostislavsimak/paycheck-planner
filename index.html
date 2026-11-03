@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Paycheck Planner">
+<meta name="theme-color" content="#f6f3ec">
+<meta name="description" content="Budget by paycheck. Private, offline, no account.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Paycheck Budget Planner 2027</title>
+<style>
+/* Layout: calm single-column app — slim top bar, 4-tab nav (bottom bar on phones), one primary action per screen; forms live in bottom sheets */
+:root{
+  --bg:#f4f6fa; --surface:#ffffff; --surface-2:#eef1f6; --fg:#1b2333; --muted:#667189; --line:#e1e5ee;
+  --accent:#3b5bdb; --accent-fg:#ffffff; --accent-soft:#e6ebff;
+  --safe:#13805a; --safe-soft:#e1f4ec; --warn:#985a00; --warn-soft:#fdf0d9; --danger:#b9473f; --danger-soft:#fbe6e2;
+  --scrim:rgba(10,16,32,.5);
+  --radius:16px;
+  --font:ui-rounded,"SF Pro Rounded","Segoe UI Variable Display","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151e; --surface:#181e2b; --surface-2:#202839; --fg:#e8ecf5; --muted:#9aa4ba; --line:#2a3346;
+  --accent:#7b96ff; --accent-fg:#0d1220; --accent-soft:#232f52;
+  --safe:#45cf9c; --safe-soft:#153328; --warn:#efb049; --warn-soft:#382b12; --danger:#f39a8f; --danger-soft:#3d2422;
+  --scrim:rgba(0,0,0,.62); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151e; --surface:#181e2b; --surface-2:#202839; --fg:#e8ecf5; --muted:#9aa4ba; --line:#2a3346;
+  --accent:#7b96ff; --accent-fg:#0d1220; --accent-soft:#232f52;
+  --safe:#45cf9c; --safe-soft:#153328; --warn:#efb049; --warn-soft:#382b12; --danger:#f39a8f; --danger-soft:#3d2422;
+  --scrim:rgba(0,0,0,.62); color-scheme:dark}
+/* color palettes: sage (default), blush, lavender; classic = base tokens above */
+:root[data-palette="sage"]{--bg:#f6f3ec;--surface:#fffdf8;--surface-2:#efebe1;--fg:#2b2f2a;--muted:#676b62;--line:#e4dfd3;--accent:#4a6e51;--accent-fg:#ffffff;--accent-soft:#e3ebe2;--safe:#3b7553;--safe-soft:#e2efe4;--warn:#97590f;--warn-soft:#f8ead3;--danger:#b04d45;--danger-soft:#f8e3df;--scrim:rgba(30,36,30,.45)}
+@media (prefers-color-scheme: dark){:root[data-palette="sage"]:not([data-theme="light"]){--bg:#161a17;--surface:#1e2420;--surface-2:#27302a;--fg:#e9ece6;--muted:#a2aa9f;--line:#323b34;--accent:#9cc3a2;--accent-fg:#14201a;--accent-soft:#2a3a2e;--safe:#8fd0a3;--safe-soft:#1d3326;--warn:#e9b76a;--warn-soft:#3a2d17;--danger:#f0998e;--danger-soft:#3d2422;--scrim:rgba(0,0,0,.6)}}
+:root[data-palette="sage"][data-theme="dark"]{--bg:#161a17;--surface:#1e2420;--surface-2:#27302a;--fg:#e9ece6;--muted:#a2aa9f;--line:#323b34;--accent:#9cc3a2;--accent-fg:#14201a;--accent-soft:#2a3a2e;--safe:#8fd0a3;--safe-soft:#1d3326;--warn:#e9b76a;--warn-soft:#3a2d17;--danger:#f0998e;--danger-soft:#3d2422;--scrim:rgba(0,0,0,.6)}
+:root[data-palette="blush"]{--bg:#fbf5f2;--surface:#fffdfb;--surface-2:#f5ebe7;--fg:#33292b;--muted:#75666a;--line:#eedfd9;--accent:#9a4b60;--accent-fg:#ffffff;--accent-soft:#f7e3e8;--safe:#437558;--safe-soft:#e4f0e6;--warn:#985a16;--warn-soft:#f9ebd6;--danger:#ad4c45;--danger-soft:#f9e2de;--scrim:rgba(45,28,32,.45)}
+@media (prefers-color-scheme: dark){:root[data-palette="blush"]:not([data-theme="light"]){--bg:#1c1617;--surface:#251d1f;--surface-2:#2f2528;--fg:#f1e8e9;--muted:#b3a2a5;--line:#3b2f32;--accent:#e7a3b4;--accent-fg:#2a1519;--accent-soft:#43292f;--safe:#8fcfa5;--safe-soft:#1e3326;--warn:#ebb86e;--warn-soft:#3b2d18;--danger:#f29c91;--danger-soft:#3f2422;--scrim:rgba(0,0,0,.6)}}
+:root[data-palette="blush"][data-theme="dark"]{--bg:#1c1617;--surface:#251d1f;--surface-2:#2f2528;--fg:#f1e8e9;--muted:#b3a2a5;--line:#3b2f32;--accent:#e7a3b4;--accent-fg:#2a1519;--accent-soft:#43292f;--safe:#8fcfa5;--safe-soft:#1e3326;--warn:#ebb86e;--warn-soft:#3b2d18;--danger:#f29c91;--danger-soft:#3f2422;--scrim:rgba(0,0,0,.6)}
+:root[data-palette="lavender"]{--bg:#f6f4fa;--surface:#fffeff;--surface-2:#eeeaf6;--fg:#2b2836;--muted:#69647c;--line:#e3deee;--accent:#6453ad;--accent-fg:#ffffff;--accent-soft:#ebe6fa;--safe:#3b7559;--safe-soft:#e1f0e8;--warn:#935a12;--warn-soft:#f8ebd5;--danger:#ab4a54;--danger-soft:#f8e2e5;--scrim:rgba(30,26,48,.45)}
+@media (prefers-color-scheme: dark){:root[data-palette="lavender"]:not([data-theme="light"]){--bg:#16151d;--surface:#1e1c28;--surface-2:#282535;--fg:#ecebf3;--muted:#a6a2b8;--line:#322f42;--accent:#b3a6f0;--accent-fg:#1a1530;--accent-soft:#2f2a4c;--safe:#8ad0ad;--safe-soft:#1b3329;--warn:#e8b56a;--warn-soft:#3a2d17;--danger:#f19aa2;--danger-soft:#3d2328;--scrim:rgba(0,0,0,.6)}}
+:root[data-palette="lavender"][data-theme="dark"]{--bg:#16151d;--surface:#1e1c28;--surface-2:#282535;--fg:#ecebf3;--muted:#a6a2b8;--line:#322f42;--accent:#b3a6f0;--accent-fg:#1a1530;--accent-soft:#2f2a4c;--safe:#8ad0ad;--safe-soft:#1b3329;--warn:#e8b56a;--warn-soft:#3a2d17;--danger:#f19aa2;--danger-soft:#3d2328;--scrim:rgba(0,0,0,.6)}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.swatch{border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:.78rem;font-weight:600;cursor:pointer;min-width:0}
+.swatch .dot{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.swatch[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:17px;line-height:1.5;padding-top:env(safe-area-inset-top,0px)}
+button,input,select{font:inherit;color:inherit}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bg)}
+.topbar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;white-space:nowrap}
+.brand .logo{width:30px;height:30px;border-radius:9px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-size:15px}
+nav.tabs{display:flex;gap:4px;margin-left:auto}
+nav.tabs button{border:0;background:transparent;padding:8px 12px;border-radius:12px;cursor:pointer;color:var(--muted);font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
+nav.tabs button[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+nav.tabs .ni{font-size:1rem;line-height:1}
+main{max-width:640px;margin:0 auto;padding-block:12px 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+body.touring main{padding-bottom:70vh}
+h1,h2,h3{margin:0;line-height:1.2;text-wrap:balance}
+h1{font-size:1.6rem} h2{font-size:1.1rem}
+p{margin:0}
+.muted{color:var(--muted)} .small{font-size:.85rem} .center{text-align:center}
+.label{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+details.card>summary{cursor:pointer;font-weight:700;list-style-position:inside}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.spread{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.hero{border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:6px}
+.hero.ok{background:var(--safe-soft)} .hero.tight{background:var(--warn-soft)} .hero.over{background:var(--danger-soft)}
+.hero .big{font-size:clamp(2.8rem,13vw,4.2rem);font-weight:800;letter-spacing:-.02em;line-height:1.05;font-variant-numeric:tabular-nums}
+.hero.ok .big{color:var(--safe)} .hero.tight .big{color:var(--warn)} .hero.over .big{color:var(--danger)}
+.hero .msg{font-weight:700;font-size:1.05rem}
+.bar{height:8px;border-radius:6px;background:var(--surface-2);overflow:hidden}
+.hero .bar{background:rgba(127,127,127,.18);margin-top:8px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:6px}
+.bar.safe i{background:var(--safe)} .bar.warn i{background:var(--warn)} .bar.danger i{background:var(--danger)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.danger{color:var(--danger)}
+.btn.soft{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.big{width:100%;padding:16px;font-size:1.08rem;border-radius:16px}
+.btn.wide{width:100%}
+.link{border:0;background:transparent;color:var(--accent);font-weight:700;cursor:pointer;padding:6px 0;align-self:flex-start}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input,select{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 12px;min-width:0;width:100%}
+input[type="checkbox"]{width:24px;height:24px;accent-color:var(--safe);padding:0;flex:none}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field span{font-size:.85rem;color:var(--muted);font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:.9rem}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.list{display:flex;flex-direction:column}
+.item,.tap{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);width:100%;text-align:left}
+.list>:first-child{border-top:0}
+.tap{border-left:0;border-right:0;border-bottom:0;background:transparent;cursor:pointer;border-radius:0}
+.tap.plain{border-top:0;padding:0}
+.grow{flex:1;min-width:0;display:flex;flex-direction:column}
+.title{font-weight:700;overflow-wrap:anywhere}
+.amt{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.emo{font-size:1.3rem;width:32px;text-align:center;flex:none}
+.item.done .title,.item.done .amt{color:var(--muted);text-decoration:line-through}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;white-space:nowrap}
+.pill.safe{background:var(--safe-soft);color:var(--safe)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.danger{background:var(--danger-soft);color:var(--danger)}
+.kv{display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums}
+.kv span{color:var(--muted)}
+.kv.total{border-top:1px solid var(--line);padding-top:10px;font-size:1.05rem}
+.kv.total span{color:var(--fg);font-weight:700}
+.tablebox{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{padding:8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+th:first-child,td:first-child{text-align:left}
+td{font-variant-numeric:tabular-nums}
+.period.current{border:2px solid var(--accent)}
+.empty{padding:18px;text-align:center;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* sheets & modal */
+.sheet-back{position:fixed;inset:0;background:var(--scrim);z-index:70;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:12px 18px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;max-height:92vh;overflow:auto;animation:up .2s ease-out}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:var(--line);align-self:center}
+@keyframes up{from{transform:translateY(30px);opacity:.5}to{transform:none;opacity:1}}
+.amount-in{font-size:2.4rem;font-weight:800;text-align:center;border:0;background:var(--surface-2);padding:16px;border-radius:16px;font-variant-numeric:tabular-nums}
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cat{border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.82rem;font-weight:600;cursor:pointer;min-width:0;overflow-wrap:anywhere;text-align:center}
+.cat .e{font-size:1.5rem;line-height:1.2}
+.cat[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+details>summary{cursor:pointer}
+.overlay{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:center;z-index:70;padding:16px}
+.modal{background:var(--surface);border-radius:20px;max-width:480px;width:100%;padding:24px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 32px);overflow:auto}
+.steps{display:flex;gap:6px}
+.steps i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.steps i.on{background:var(--accent)}
+svg text{fill:var(--muted);font-size:11px;font-family:var(--font)}
+.legend{display:flex;gap:16px;font-size:.85rem;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.demo-banner{background:var(--accent-soft);color:var(--accent);border-radius:12px;padding:8px 14px;font-weight:700;font-size:.85rem;text-align:center}
+/* guided tour */
+.tour-dim{position:fixed;inset:0;background:var(--scrim);z-index:55}
+.tour-focus{position:relative;z-index:56;box-shadow:0 0 0 4px var(--accent),0 0 0 200vmax var(--scrim)!important;border-radius:var(--radius);pointer-events:none}
+.tour-card{position:fixed;left:50%;transform:translateX(-50%);width:min(480px,calc(100% - 24px));z-index:60;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--surface);border-radius:20px;padding:20px;box-shadow:0 12px 40px rgba(0,0,0,.25);display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 32px);overflow:auto}
+.tour-card.top{top:calc(12px + env(safe-area-inset-top,0px));bottom:auto}
+.tour-card.center{top:50%;bottom:auto;transform:translate(-50%,-50%)}
+.tour-card h2{font-size:1.3rem}
+.tour-card p{font-size:1.05rem}
+.dots{display:flex;gap:6px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+details.topic{border-top:1px solid var(--line);padding:12px 0}
+details.topic:first-of-type{border-top:0}
+details.topic summary{font-weight:700}
+details.topic p{margin-top:8px;line-height:1.6}
+@media (max-width:760px){
+  .topbar-in{justify-content:center}
+  nav.tabs{position:fixed;left:0;right:0;bottom:0;margin:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px));z-index:30}
+  nav.tabs.tour-focus{position:fixed;border-radius:0}
+  nav.tabs button{flex-direction:column;gap:2px;padding:6px 2px;font-size:.75rem;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  nav.tabs .ni{font-size:1.35rem}
+  .hero{padding:20px}
+  .tour-card{bottom:calc(84px + env(safe-area-inset-bottom,0px));padding:16px}
+}
+@media (min-width:761px){.sheet-back{align-items:center}.sheet{border-radius:22px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+  <div class="brand"><div class="logo" aria-hidden="true">$</div><div>Paycheck Planner</div></div>
+  <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+</div></header>
+<main id="view" tabindex="-1"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="modalRoot"></div>
+<div id="tourRoot"></div>
+
+<script>
+/* ======================= TRANSLATIONS ======================= */
+const LANGS=[["en","English","en-US"],["es","Español","es-ES"],["fr","Français","fr-FR"],["de","Deutsch","de-DE"],["it","Italiano","it-IT"]];
+const I18N={};
+I18N.en={
+"nav.today":"Today","nav.paychecks":"Paychecks","nav.bills":"Bills","nav.debts":"Debts","nav.savings":"Savings","nav.year":"Year","nav.settings":"Setup",
+"navs.today":"Today","navs.paychecks":"Pay","navs.bills":"Bills","navs.debts":"Debts","navs.savings":"Save","navs.year":"Year","navs.settings":"Setup",
+"brand.sub":"Budget by paycheck","help":"Help & tutorial",
+"t.safe":"Safe to spend today","t.left":"Left this paycheck","t.days":"Days to payday","t.next":"Next payday",
+"t.over":"You're over for this paycheck. Pause extra spending until {0}.","t.tight":"Getting tight — stick to essentials this paycheck.","t.ok":"You're on track. Spend up to this today and stay on plan.",
+"t.used":"Paycheck used","t.log":"Log spending","f.amount":"Amount","f.note":"Note (optional)","f.notePh":"e.g. Target run","f.date":"Date","b.add":"Add","t.cat":"Category",
+"t.noSpend":"No spending logged yet. Add your first purchase above.","t.due":"Due this paycheck","t.noDue":"No bills due before your next payday.","t.still":"Still to pay","t.limits":"Spending limits this paycheck",
+"b.delete":"Delete","pill.autopay":"Autopay","pill.debt":"Debt","toast.logged":"{0} logged","toast.removed":"Removed","toast.amount":"Enter an amount","toast.paid":"Marked paid ✓",
+"p.title":"Paychecks","p.intro":"Every paycheck gets a job: bills, savings, spending.","p.current":"Current paycheck","p.past":"Past","p.up":"Upcoming","p.left":"{0} left","p.pay":"Paycheck","p.extra":"Extra income","p.extraHint":"side gig, refund… negative if smaller","p.bills":"Bills & debt payments ({0})","p.sav":"Savings goals","p.xdebt":"Extra debt payment","p.spent":"Spent","p.lts":"Left to spend","p.show":"Show bills in this paycheck",
+"bi.title":"Bills","bi.total":"Monthly total","bi.add":"Add a bill","bi.edit":"Edit bill","bi.name":"Name","bi.namePh":"Rent","bi.due":"Due day of month","bi.cat":"Category","bi.auto":"Autopay","b.save":"Save","bi.addBtn":"Add bill","bi.colBill":"Bill","bi.colDue":"Due","bi.colAmt":"Amount","bi.day":"Day {0}","b.edit":"Edit","bi.empty":"Add rent, utilities, phone and subscriptions. They're placed in the right paycheck automatically.","bi.deleted":"Bill deleted","bi.added":"Bill added","bi.saved":"Bill saved",
+"bc.housing":"Housing","bc.utilities":"Utilities","bc.phone":"Phone & internet","bc.insurance":"Insurance","bc.transport":"Transport","bc.subs":"Subscriptions","bc.childcare":"Childcare","bc.other":"Other",
+"d.title":"Debts","d.total":"Total","d.add":"Add a debt","d.edit":"Edit debt","d.namePh":"Visa card","d.bal":"Balance","d.apr":"Interest (APR %)","d.min":"Minimum payment","d.due":"Due day","d.addBtn":"Add debt","d.note":"Update balances from your statements each month. Minimum payments appear as bills in your paychecks.","d.plan":"Payoff plan","d.method":"Method","d.snow":"Snowball · smallest first","d.aval":"Avalanche · highest interest first","d.extra":"Extra payment every paycheck","d.emptyPlan":"Add a debt to see your debt-free date.","d.stuck":"Payments don't cover the interest.","d.stuckSub":"Raise the minimum payment or add an extra payment to make progress.","d.free":"Debt-free in","d.months":"{0} months","d.interest":"{0} · about {1} interest","d.paidOff":"Paid off {0}","d.colDebt":"Debt","d.empty":"No debts added. Lucky you — or add one above.","d.deleted":"Debt deleted","d.added":"Debt added","d.saved":"Debt saved",
+"s.title":"Savings goals","s.intro":"Set an amount per paycheck. Tap “Saved” when you move it.","s.new":"New goal","s.edit":"Edit goal","s.goal":"Goal","s.goalPh":"Emergency fund","s.target":"Target","s.already":"Already saved","s.per":"Per paycheck","s.addBtn":"Add goal","s.reached":"Reached!","s.of":"of {0}","s.perPay":"{0} per paycheck","s.toGo":"{0} paychecks to go","s.savedThis":"✓ Saved this paycheck","s.saveNow":"Saved {0} this paycheck","s.empty":"Start with an emergency fund: even a small amount per paycheck adds up.","s.deleted":"Goal deleted","s.added":"Goal added","s.saved":"Goal saved","s.reachedToast":"Goal reached! 🎉","s.savedToast":"Nice — {0} saved","s.undone":"Undone",
+"y.title":"{0} overview","y.bonus":"Bonus paycheck months: {0}","y.bonusSub":"These months have 3 paydays. Plan that extra paycheck for savings or debt.","y.inout":"Money in vs. out","y.income":"Income","y.out":"Bills + spending + savings","y.month":"Month","y.paydays":"Paydays","y.bills":"Bills","y.spent":"Spent","y.sav":"Savings","y.net":"Net","y.total":"Total","y.note":"Spent shows what you've logged. Future months show your plan.","y.prev":"Previous year","y.next":"Next year","y.chart":"Monthly income versus outgoing",
+"se.title":"Setup","se.pay":"Your paycheck","se.take":"Take-home pay per paycheck","se.freq":"How often are you paid?","fq.weekly":"Weekly","fq.biweekly":"Every 2 weeks","fq.semimonthly":"Twice a month (1st & 15th)","fq.monthly":"Monthly","se.anchor":"A recent or upcoming payday","se.cur":"Currency","se.lang":"Language","se.theme":"Appearance","th.auto":"Match my device","th.light":"Light","th.dark":"Dark","se.save":"Save settings","se.limits":"Spending limits per paycheck","se.limitsSub":"Optional. Shows a progress bar on Today for each category.","se.saveLimits":"Save limits","se.backup":"Backup","se.backupSub":"Your data stays on this device, inside this browser. Download a backup now and then, and use it to move to another device.","se.dl":"Download backup","se.restore":"Restore backup","se.over":"Start over","se.sample":"Load example data","se.erase":"Erase everything","se.overSub":"Example data replaces your current data. Erasing can't be undone unless you have a backup.","se.saved":"Settings saved","se.limitsSaved":"Limits saved","se.dlDone":"Backup downloaded","se.restored":"Backup restored","se.bad":"That file isn't a Paycheck Planner backup","se.sampleLoaded":"Example data loaded","se.confReplace":"Replace my data?","se.confErase":"Yes, erase everything?","se.cantSave":"Couldn't save — download a backup in Setup","se.common":"Common","se.all":"All currencies","se.tour":"Replay the tutorial",
+"w.title":"Set up your paycheck","w.body":"A few quick questions and you're done. Use your take-home pay — the amount that actually lands in your account.","w.next":"Next","w.doneTitle":"You're set!","w.doneBody":"Next, add your bills — rent, phone, subscriptions. Each one lands in the paycheck that pays it. Then log purchases on Today as you go.","w.bills":"Add my bills","w.today":"Go to Today",
+"cat.groceries":"Groceries","cat.gas":"Gas","cat.eating":"Eating out","cat.fun":"Fun","cat.household":"Household","cat.personal":"Personal","cat.kids":"Kids","cat.pets":"Pets","cat.health":"Health","cat.other":"Other",
+"sm.rent":"Rent","sm.electric":"Electric","sm.phone":"Phone","sm.internet":"Internet","sm.carIns":"Car insurance","sm.gym":"Gym","sm.visa":"Visa card","sm.car":"Car loan","sm.store":"Store card","sm.emergency":"Emergency fund","sm.xmas":"Christmas gifts","sm.trip":"Summer trip","sm.tacos":"Tacos","sm.movie":"Movie night","sm.cleaning":"Cleaning supplies","sm.haircut":"Haircut",
+"tr.back":"Back","tr.next":"Next","tr.skip":"Skip tutorial","tr.of":"{0} of {1}","tr.own":"Start with my own data","tr.keep":"Keep exploring the example","tr.backData":"Back to my data","tr.demo":"Tutorial · example data, not your money",
+"h.title":"Help & tutorial","h.intro":"Everything the app does, explained. Tap a topic to open it.","h.replay":"Replay the guided tour","h.guide":"How to use it","h.faq":"Questions & fixes"
+};
+I18N.es={
+"nav.today":"Hoy","nav.paychecks":"Pagos","nav.bills":"Facturas","nav.debts":"Deudas","nav.savings":"Ahorro","nav.year":"Año","nav.settings":"Ajustes",
+"navs.today":"Hoy","navs.paychecks":"Pagos","navs.bills":"Facturas","navs.debts":"Deudas","navs.savings":"Ahorro","navs.year":"Año","navs.settings":"Ajustes",
+"brand.sub":"Presupuesto por sueldo","help":"Ayuda y tutorial",
+"t.safe":"Puedes gastar hoy","t.left":"Queda de este sueldo","t.days":"Días hasta el cobro","t.next":"Próximo cobro",
+"t.over":"Te has pasado en este sueldo. Frena los gastos extra hasta el {0}.","t.tight":"Va justo: limítate a lo esencial en este sueldo.","t.ok":"Vas bien. Gasta hasta esta cantidad hoy y sigue el plan.",
+"t.used":"Sueldo usado","t.log":"Anotar gasto","f.amount":"Importe","f.note":"Nota (opcional)","f.notePh":"p. ej. supermercado","f.date":"Fecha","b.add":"Añadir","t.cat":"Categoría",
+"t.noSpend":"Aún no hay gastos. Añade tu primera compra arriba.","t.due":"A pagar con este sueldo","t.noDue":"No hay facturas antes del próximo cobro.","t.still":"Pendiente de pagar","t.limits":"Límites de gasto de este sueldo",
+"b.delete":"Eliminar","pill.autopay":"Domiciliado","pill.debt":"Deuda","toast.logged":"{0} anotado","toast.removed":"Eliminado","toast.amount":"Introduce un importe","toast.paid":"Marcado como pagado ✓",
+"p.title":"Sueldos","p.intro":"Cada sueldo tiene una tarea: facturas, ahorro, gastos.","p.current":"Sueldo actual","p.past":"Pasado","p.up":"Próximo","p.left":"Quedan {0}","p.pay":"Sueldo","p.extra":"Ingreso extra","p.extraHint":"trabajo extra, reembolso… negativo si fue menor","p.bills":"Facturas y pagos de deuda ({0})","p.sav":"Metas de ahorro","p.xdebt":"Pago extra de deuda","p.spent":"Gastado","p.lts":"Disponible para gastar","p.show":"Ver facturas de este sueldo",
+"bi.title":"Facturas","bi.total":"Total mensual","bi.add":"Añadir factura","bi.edit":"Editar factura","bi.name":"Nombre","bi.namePh":"Alquiler","bi.due":"Día de vencimiento","bi.cat":"Categoría","bi.auto":"Domiciliado","b.save":"Guardar","bi.addBtn":"Añadir factura","bi.colBill":"Factura","bi.colDue":"Vence","bi.colAmt":"Importe","bi.day":"Día {0}","b.edit":"Editar","bi.empty":"Añade alquiler, luz, teléfono y suscripciones. Se colocan solas en el sueldo correcto.","bi.deleted":"Factura eliminada","bi.added":"Factura añadida","bi.saved":"Factura guardada",
+"bc.housing":"Vivienda","bc.utilities":"Suministros","bc.phone":"Teléfono e internet","bc.insurance":"Seguros","bc.transport":"Transporte","bc.subs":"Suscripciones","bc.childcare":"Cuidado infantil","bc.other":"Otros",
+"d.title":"Deudas","d.total":"Total","d.add":"Añadir deuda","d.edit":"Editar deuda","d.namePh":"Tarjeta Visa","d.bal":"Saldo","d.apr":"Interés (TAE %)","d.min":"Pago mínimo","d.due":"Día de pago","d.addBtn":"Añadir deuda","d.note":"Actualiza los saldos con tus extractos cada mes. Los pagos mínimos aparecen como facturas en tus sueldos.","d.plan":"Plan de pago","d.method":"Método","d.snow":"Bola de nieve · la menor primero","d.aval":"Avalancha · mayor interés primero","d.extra":"Pago extra en cada sueldo","d.emptyPlan":"Añade una deuda para ver cuándo serás libre de deudas.","d.stuck":"Los pagos no cubren los intereses.","d.stuckSub":"Sube el pago mínimo o añade un pago extra para avanzar.","d.free":"Sin deudas en","d.months":"{0} meses","d.interest":"{0} · unos {1} de intereses","d.paidOff":"Pagada en {0}","d.colDebt":"Deuda","d.empty":"No hay deudas. ¡Qué suerte! O añade una arriba.","d.deleted":"Deuda eliminada","d.added":"Deuda añadida","d.saved":"Deuda guardada",
+"s.title":"Metas de ahorro","s.intro":"Fija una cantidad por sueldo. Pulsa «Ahorrado» cuando la muevas.","s.new":"Nueva meta","s.edit":"Editar meta","s.goal":"Meta","s.goalPh":"Fondo de emergencia","s.target":"Objetivo","s.already":"Ya ahorrado","s.per":"Por sueldo","s.addBtn":"Añadir meta","s.reached":"¡Conseguido!","s.of":"de {0}","s.perPay":"{0} por sueldo","s.toGo":"faltan {0} sueldos","s.savedThis":"✓ Ahorrado en este sueldo","s.saveNow":"Ahorrado {0} en este sueldo","s.empty":"Empieza con un fondo de emergencia: incluso poco por sueldo suma.","s.deleted":"Meta eliminada","s.added":"Meta añadida","s.saved":"Meta guardada","s.reachedToast":"¡Meta conseguida! 🎉","s.savedToast":"Genial: {0} ahorrados","s.undone":"Deshecho",
+"y.title":"Resumen {0}","y.bonus":"Meses con sueldo extra: {0}","y.bonusSub":"Estos meses tienen 3 cobros. Destina ese sueldo extra al ahorro o a las deudas.","y.inout":"Entradas vs. salidas","y.income":"Ingresos","y.out":"Facturas + gastos + ahorro","y.month":"Mes","y.paydays":"Cobros","y.bills":"Facturas","y.spent":"Gastado","y.sav":"Ahorro","y.net":"Neto","y.total":"Total","y.note":"«Gastado» muestra lo que has anotado. Los meses futuros muestran tu plan.","y.prev":"Año anterior","y.next":"Año siguiente","y.chart":"Ingresos y salidas mensuales",
+"se.title":"Ajustes","se.pay":"Tu sueldo","se.take":"Sueldo neto por cobro","se.freq":"¿Cada cuánto cobras?","fq.weekly":"Semanal","fq.biweekly":"Cada 2 semanas","fq.semimonthly":"Dos veces al mes (día 1 y 15)","fq.monthly":"Mensual","se.anchor":"Un día de cobro reciente o próximo","se.cur":"Moneda","se.lang":"Idioma","se.theme":"Apariencia","th.auto":"Como mi dispositivo","th.light":"Clara","th.dark":"Oscura","se.save":"Guardar ajustes","se.limits":"Límites de gasto por sueldo","se.limitsSub":"Opcional. Muestra una barra de progreso en Hoy para cada categoría.","se.saveLimits":"Guardar límites","se.backup":"Copia de seguridad","se.backupSub":"Tus datos se quedan en este dispositivo, en este navegador. Descarga una copia de vez en cuando y úsala para pasar a otro dispositivo.","se.dl":"Descargar copia","se.restore":"Restaurar copia","se.over":"Empezar de cero","se.sample":"Cargar datos de ejemplo","se.erase":"Borrar todo","se.overSub":"Los datos de ejemplo sustituyen a los tuyos. Borrar no se puede deshacer sin una copia.","se.saved":"Ajustes guardados","se.limitsSaved":"Límites guardados","se.dlDone":"Copia descargada","se.restored":"Copia restaurada","se.bad":"Ese archivo no es una copia de Paycheck Planner","se.sampleLoaded":"Datos de ejemplo cargados","se.confReplace":"¿Sustituir mis datos?","se.confErase":"¿Sí, borrar todo?","se.cantSave":"No se pudo guardar: descarga una copia en Ajustes","se.common":"Habituales","se.all":"Todas las monedas","se.tour":"Ver el tutorial otra vez",
+"w.title":"Configura tu sueldo","w.body":"Unas preguntas rápidas y listo. Usa tu sueldo neto: lo que realmente llega a tu cuenta.","w.next":"Siguiente","w.doneTitle":"¡Listo!","w.doneBody":"Ahora añade tus facturas: alquiler, teléfono, suscripciones. Cada una cae en el sueldo que la paga. Luego anota tus compras en Hoy.","w.bills":"Añadir mis facturas","w.today":"Ir a Hoy",
+"cat.groceries":"Supermercado","cat.gas":"Gasolina","cat.eating":"Comer fuera","cat.fun":"Ocio","cat.household":"Hogar","cat.personal":"Personal","cat.kids":"Niños","cat.pets":"Mascotas","cat.health":"Salud","cat.other":"Otros",
+"sm.rent":"Alquiler","sm.electric":"Luz","sm.phone":"Teléfono","sm.internet":"Internet","sm.carIns":"Seguro del coche","sm.gym":"Gimnasio","sm.visa":"Tarjeta Visa","sm.car":"Préstamo del coche","sm.store":"Tarjeta de tienda","sm.emergency":"Fondo de emergencia","sm.xmas":"Regalos de Navidad","sm.trip":"Viaje de verano","sm.tacos":"Tacos","sm.movie":"Noche de cine","sm.cleaning":"Productos de limpieza","sm.haircut":"Peluquería",
+"tr.back":"Atrás","tr.next":"Siguiente","tr.skip":"Saltar tutorial","tr.of":"{0} de {1}","tr.own":"Empezar con mis datos","tr.keep":"Seguir explorando el ejemplo","tr.backData":"Volver a mis datos","tr.demo":"Tutorial · datos de ejemplo, no es tu dinero",
+"h.title":"Ayuda y tutorial","h.intro":"Todo lo que hace la app, explicado. Toca un tema para abrirlo.","h.replay":"Repetir la visita guiada","h.guide":"Cómo se usa","h.faq":"Preguntas y soluciones"
+};
+I18N.fr={
+"nav.today":"Aujourd'hui","nav.paychecks":"Paies","nav.bills":"Factures","nav.debts":"Dettes","nav.savings":"Épargne","nav.year":"Année","nav.settings":"Réglages",
+"navs.today":"Jour","navs.paychecks":"Paies","navs.bills":"Factures","navs.debts":"Dettes","navs.savings":"Épargne","navs.year":"Année","navs.settings":"Réglages",
+"brand.sub":"Budget par paie","help":"Aide et tutoriel",
+"t.safe":"Dépensable aujourd'hui","t.left":"Reste sur cette paie","t.days":"Jours avant la paie","t.next":"Prochaine paie",
+"t.over":"Vous avez dépassé cette paie. Mettez les dépenses en pause jusqu'au {0}.","t.tight":"Ça se resserre : l'essentiel seulement sur cette paie.","t.ok":"Tout va bien. Dépensez jusqu'à ce montant aujourd'hui et gardez le cap.",
+"t.used":"Paie utilisée","t.log":"Noter une dépense","f.amount":"Montant","f.note":"Note (facultatif)","f.notePh":"ex. courses","f.date":"Date","b.add":"Ajouter","t.cat":"Catégorie",
+"t.noSpend":"Aucune dépense pour l'instant. Ajoutez votre premier achat ci-dessus.","t.due":"À payer avec cette paie","t.noDue":"Aucune facture avant la prochaine paie.","t.still":"Reste à payer","t.limits":"Plafonds de dépense de cette paie",
+"b.delete":"Supprimer","pill.autopay":"Prélèvement","pill.debt":"Dette","toast.logged":"{0} noté","toast.removed":"Supprimé","toast.amount":"Saisissez un montant","toast.paid":"Marqué payé ✓",
+"p.title":"Paies","p.intro":"Chaque paie a une mission : factures, épargne, dépenses.","p.current":"Paie en cours","p.past":"Passée","p.up":"À venir","p.left":"Reste {0}","p.pay":"Paie","p.extra":"Revenu en plus","p.extraHint":"petit boulot, remboursement… négatif si plus faible","p.bills":"Factures et remboursements ({0})","p.sav":"Objectifs d'épargne","p.xdebt":"Remboursement en plus","p.spent":"Dépensé","p.lts":"Reste à dépenser","p.show":"Voir les factures de cette paie",
+"bi.title":"Factures","bi.total":"Total mensuel","bi.add":"Ajouter une facture","bi.edit":"Modifier la facture","bi.name":"Nom","bi.namePh":"Loyer","bi.due":"Jour d'échéance","bi.cat":"Catégorie","bi.auto":"Prélèvement auto","b.save":"Enregistrer","bi.addBtn":"Ajouter","bi.colBill":"Facture","bi.colDue":"Échéance","bi.colAmt":"Montant","bi.day":"Le {0}","b.edit":"Modifier","bi.empty":"Ajoutez loyer, énergie, téléphone et abonnements. Ils se placent tout seuls dans la bonne paie.","bi.deleted":"Facture supprimée","bi.added":"Facture ajoutée","bi.saved":"Facture enregistrée",
+"bc.housing":"Logement","bc.utilities":"Énergie et eau","bc.phone":"Téléphone et internet","bc.insurance":"Assurances","bc.transport":"Transport","bc.subs":"Abonnements","bc.childcare":"Garde d'enfants","bc.other":"Autre",
+"d.title":"Dettes","d.total":"Total","d.add":"Ajouter une dette","d.edit":"Modifier la dette","d.namePh":"Carte Visa","d.bal":"Solde","d.apr":"Taux (TAEG %)","d.min":"Paiement minimum","d.due":"Jour de paiement","d.addBtn":"Ajouter","d.note":"Mettez les soldes à jour avec vos relevés chaque mois. Les paiements minimums apparaissent comme factures dans vos paies.","d.plan":"Plan de remboursement","d.method":"Méthode","d.snow":"Boule de neige · la plus petite d'abord","d.aval":"Avalanche · le taux le plus élevé d'abord","d.extra":"Remboursement en plus à chaque paie","d.emptyPlan":"Ajoutez une dette pour voir votre date de liberté.","d.stuck":"Les paiements ne couvrent pas les intérêts.","d.stuckSub":"Augmentez le minimum ou ajoutez un remboursement en plus.","d.free":"Sans dettes dans","d.months":"{0} mois","d.interest":"{0} · environ {1} d'intérêts","d.paidOff":"Soldée en {0}","d.colDebt":"Dette","d.empty":"Aucune dette. Tant mieux ! Ou ajoutez-en une ci-dessus.","d.deleted":"Dette supprimée","d.added":"Dette ajoutée","d.saved":"Dette enregistrée",
+"s.title":"Objectifs d'épargne","s.intro":"Fixez un montant par paie. Touchez « Épargné » quand vous le virez.","s.new":"Nouvel objectif","s.edit":"Modifier l'objectif","s.goal":"Objectif","s.goalPh":"Épargne de précaution","s.target":"Cible","s.already":"Déjà épargné","s.per":"Par paie","s.addBtn":"Ajouter","s.reached":"Atteint !","s.of":"sur {0}","s.perPay":"{0} par paie","s.toGo":"encore {0} paies","s.savedThis":"✓ Épargné sur cette paie","s.saveNow":"{0} épargnés sur cette paie","s.empty":"Commencez par une épargne de précaution : même un petit montant par paie s'accumule.","s.deleted":"Objectif supprimé","s.added":"Objectif ajouté","s.saved":"Objectif enregistré","s.reachedToast":"Objectif atteint ! 🎉","s.savedToast":"Bravo : {0} épargnés","s.undone":"Annulé",
+"y.title":"Bilan {0}","y.bonus":"Mois avec une paie bonus : {0}","y.bonusSub":"Ces mois comptent 3 paies. Mettez cette paie en plus de côté ou sur vos dettes.","y.inout":"Entrées vs sorties","y.income":"Revenus","y.out":"Factures + dépenses + épargne","y.month":"Mois","y.paydays":"Paies","y.bills":"Factures","y.spent":"Dépensé","y.sav":"Épargne","y.net":"Solde","y.total":"Total","y.note":"« Dépensé » montre ce que vous avez noté. Les mois futurs montrent votre plan.","y.prev":"Année précédente","y.next":"Année suivante","y.chart":"Revenus et sorties par mois",
+"se.title":"Réglages","se.pay":"Votre paie","se.take":"Salaire net par paie","se.freq":"À quelle fréquence êtes-vous payé ?","fq.weekly":"Chaque semaine","fq.biweekly":"Toutes les 2 semaines","fq.semimonthly":"Deux fois par mois (1er et 15)","fq.monthly":"Chaque mois","se.anchor":"Un jour de paie récent ou à venir","se.cur":"Devise","se.lang":"Langue","se.theme":"Apparence","th.auto":"Comme mon appareil","th.light":"Clair","th.dark":"Sombre","se.save":"Enregistrer","se.limits":"Plafonds de dépense par paie","se.limitsSub":"Facultatif. Affiche une barre de progression dans Aujourd'hui pour chaque catégorie.","se.saveLimits":"Enregistrer les plafonds","se.backup":"Sauvegarde","se.backupSub":"Vos données restent sur cet appareil, dans ce navigateur. Téléchargez une sauvegarde de temps en temps, et utilisez-la pour changer d'appareil.","se.dl":"Télécharger la sauvegarde","se.restore":"Restaurer une sauvegarde","se.over":"Recommencer","se.sample":"Charger l'exemple","se.erase":"Tout effacer","se.overSub":"L'exemple remplace vos données actuelles. L'effacement est définitif sans sauvegarde.","se.saved":"Réglages enregistrés","se.limitsSaved":"Plafonds enregistrés","se.dlDone":"Sauvegarde téléchargée","se.restored":"Sauvegarde restaurée","se.bad":"Ce fichier n'est pas une sauvegarde Paycheck Planner","se.sampleLoaded":"Exemple chargé","se.confReplace":"Remplacer mes données ?","se.confErase":"Oui, tout effacer ?","se.cantSave":"Enregistrement impossible : téléchargez une sauvegarde dans Réglages","se.common":"Courantes","se.all":"Toutes les devises","se.tour":"Revoir le tutoriel",
+"w.title":"Configurez votre paie","w.body":"Quelques questions rapides et c'est fini. Indiquez votre salaire net : ce qui arrive vraiment sur votre compte.","w.next":"Suivant","w.doneTitle":"C'est prêt !","w.doneBody":"Ajoutez maintenant vos factures : loyer, téléphone, abonnements. Chacune tombe dans la paie qui la règle. Ensuite, notez vos achats dans Aujourd'hui.","w.bills":"Ajouter mes factures","w.today":"Aller à Aujourd'hui",
+"cat.groceries":"Courses","cat.gas":"Carburant","cat.eating":"Restaurants","cat.fun":"Loisirs","cat.household":"Maison","cat.personal":"Perso","cat.kids":"Enfants","cat.pets":"Animaux","cat.health":"Santé","cat.other":"Autre",
+"sm.rent":"Loyer","sm.electric":"Électricité","sm.phone":"Téléphone","sm.internet":"Internet","sm.carIns":"Assurance auto","sm.gym":"Salle de sport","sm.visa":"Carte Visa","sm.car":"Crédit auto","sm.store":"Carte magasin","sm.emergency":"Épargne de précaution","sm.xmas":"Cadeaux de Noël","sm.trip":"Vacances d'été","sm.tacos":"Tacos","sm.movie":"Soirée cinéma","sm.cleaning":"Produits ménagers","sm.haircut":"Coiffeur",
+"tr.back":"Retour","tr.next":"Suivant","tr.skip":"Passer le tutoriel","tr.of":"{0} sur {1}","tr.own":"Commencer avec mes données","tr.keep":"Continuer à explorer l'exemple","tr.backData":"Revenir à mes données","tr.demo":"Tutoriel · données d'exemple, pas votre argent",
+"h.title":"Aide et tutoriel","h.intro":"Tout ce que fait l'app, expliqué. Touchez un sujet pour l'ouvrir.","h.replay":"Relancer la visite guidée","h.guide":"Mode d'emploi","h.faq":"Questions et solutions"
+};
+I18N.de={
+"nav.today":"Heute","nav.paychecks":"Gehälter","nav.bills":"Rechnungen","nav.debts":"Schulden","nav.savings":"Sparen","nav.year":"Jahr","nav.settings":"Einstellungen",
+"navs.today":"Heute","navs.paychecks":"Gehalt","navs.bills":"Rechn.","navs.debts":"Schuld","navs.savings":"Sparen","navs.year":"Jahr","navs.settings":"Setup",
+"brand.sub":"Budget pro Gehalt","help":"Hilfe & Tutorial",
+"t.safe":"Heute sicher ausgeben","t.left":"Rest von diesem Gehalt","t.days":"Tage bis zum Zahltag","t.next":"Nächster Zahltag",
+"t.over":"Du liegst über diesem Gehalt. Pausiere Extra-Ausgaben bis {0}.","t.tight":"Es wird knapp – nur das Nötigste bei diesem Gehalt.","t.ok":"Alles im Plan. Gib heute bis zu diesem Betrag aus.",
+"t.used":"Gehalt verbraucht","t.log":"Ausgabe erfassen","f.amount":"Betrag","f.note":"Notiz (optional)","f.notePh":"z. B. Supermarkt","f.date":"Datum","b.add":"Hinzufügen","t.cat":"Kategorie",
+"t.noSpend":"Noch keine Ausgaben. Erfasse oben deinen ersten Einkauf.","t.due":"Fällig mit diesem Gehalt","t.noDue":"Keine Rechnungen bis zum nächsten Zahltag.","t.still":"Noch zu zahlen","t.limits":"Ausgabenlimits für dieses Gehalt",
+"b.delete":"Löschen","pill.autopay":"Lastschrift","pill.debt":"Schulden","toast.logged":"{0} erfasst","toast.removed":"Entfernt","toast.amount":"Bitte Betrag eingeben","toast.paid":"Als bezahlt markiert ✓",
+"p.title":"Gehälter","p.intro":"Jedes Gehalt hat eine Aufgabe: Rechnungen, Sparen, Ausgaben.","p.current":"Aktuelles Gehalt","p.past":"Vergangen","p.up":"Kommend","p.left":"{0} übrig","p.pay":"Gehalt","p.extra":"Zusatzeinkommen","p.extraHint":"Nebenjob, Erstattung… negativ, wenn weniger","p.bills":"Rechnungen & Raten ({0})","p.sav":"Sparziele","p.xdebt":"Sondertilgung","p.spent":"Ausgegeben","p.lts":"Frei verfügbar","p.show":"Rechnungen dieses Gehalts zeigen",
+"bi.title":"Rechnungen","bi.total":"Monatlich gesamt","bi.add":"Rechnung hinzufügen","bi.edit":"Rechnung bearbeiten","bi.name":"Name","bi.namePh":"Miete","bi.due":"Fälligkeitstag","bi.cat":"Kategorie","bi.auto":"Lastschrift","b.save":"Speichern","bi.addBtn":"Hinzufügen","bi.colBill":"Rechnung","bi.colDue":"Fällig","bi.colAmt":"Betrag","bi.day":"Am {0}.","b.edit":"Bearbeiten","bi.empty":"Füge Miete, Strom, Handy und Abos hinzu. Sie landen automatisch im richtigen Gehalt.","bi.deleted":"Rechnung gelöscht","bi.added":"Rechnung hinzugefügt","bi.saved":"Rechnung gespeichert",
+"bc.housing":"Wohnen","bc.utilities":"Nebenkosten","bc.phone":"Handy & Internet","bc.insurance":"Versicherungen","bc.transport":"Mobilität","bc.subs":"Abos","bc.childcare":"Kinderbetreuung","bc.other":"Sonstiges",
+"d.title":"Schulden","d.total":"Gesamt","d.add":"Schuld hinzufügen","d.edit":"Schuld bearbeiten","d.namePh":"Kreditkarte","d.bal":"Restschuld","d.apr":"Zinssatz (eff. %)","d.min":"Mindestrate","d.due":"Fälligkeitstag","d.addBtn":"Hinzufügen","d.note":"Aktualisiere die Restschuld jeden Monat laut Kontoauszug. Mindestraten erscheinen als Rechnungen in deinen Gehältern.","d.plan":"Tilgungsplan","d.method":"Methode","d.snow":"Schneeball · kleinste zuerst","d.aval":"Lawine · höchster Zins zuerst","d.extra":"Sondertilgung pro Gehalt","d.emptyPlan":"Füge eine Schuld hinzu, um dein schuldenfreies Datum zu sehen.","d.stuck":"Die Raten decken nicht einmal die Zinsen.","d.stuckSub":"Erhöhe die Mindestrate oder füge eine Sondertilgung hinzu.","d.free":"Schuldenfrei in","d.months":"{0} Monaten","d.interest":"{0} · etwa {1} Zinsen","d.paidOff":"Getilgt {0}","d.colDebt":"Schuld","d.empty":"Keine Schulden eingetragen. Glückwunsch – oder füge oben eine hinzu.","d.deleted":"Schuld gelöscht","d.added":"Schuld hinzugefügt","d.saved":"Schuld gespeichert",
+"s.title":"Sparziele","s.intro":"Lege einen Betrag pro Gehalt fest. Tippe „Gespart“, wenn du ihn überweist.","s.new":"Neues Ziel","s.edit":"Ziel bearbeiten","s.goal":"Ziel","s.goalPh":"Notgroschen","s.target":"Zielbetrag","s.already":"Schon gespart","s.per":"Pro Gehalt","s.addBtn":"Hinzufügen","s.reached":"Erreicht!","s.of":"von {0}","s.perPay":"{0} pro Gehalt","s.toGo":"noch {0} Gehälter","s.savedThis":"✓ Bei diesem Gehalt gespart","s.saveNow":"{0} bei diesem Gehalt gespart","s.empty":"Starte mit einem Notgroschen: schon kleine Beträge pro Gehalt summieren sich.","s.deleted":"Ziel gelöscht","s.added":"Ziel hinzugefügt","s.saved":"Ziel gespeichert","s.reachedToast":"Ziel erreicht! 🎉","s.savedToast":"Super – {0} gespart","s.undone":"Rückgängig gemacht",
+"y.title":"Überblick {0}","y.bonus":"Monate mit Extra-Gehalt: {0}","y.bonusSub":"Diese Monate haben 3 Zahltage. Plane das zusätzliche Gehalt fürs Sparen oder Tilgen ein.","y.inout":"Einnahmen vs. Ausgaben","y.income":"Einnahmen","y.out":"Rechnungen + Ausgaben + Sparen","y.month":"Monat","y.paydays":"Zahltage","y.bills":"Rechnungen","y.spent":"Ausgegeben","y.sav":"Sparen","y.net":"Saldo","y.total":"Gesamt","y.note":"„Ausgegeben“ zeigt, was du erfasst hast. Künftige Monate zeigen deinen Plan.","y.prev":"Vorjahr","y.next":"Nächstes Jahr","y.chart":"Monatliche Einnahmen und Ausgaben",
+"se.title":"Einstellungen","se.pay":"Dein Gehalt","se.take":"Nettogehalt pro Zahlung","se.freq":"Wie oft wirst du bezahlt?","fq.weekly":"Wöchentlich","fq.biweekly":"Alle 2 Wochen","fq.semimonthly":"Zweimal im Monat (1. & 15.)","fq.monthly":"Monatlich","se.anchor":"Ein letzter oder nächster Zahltag","se.cur":"Währung","se.lang":"Sprache","se.theme":"Darstellung","th.auto":"Wie mein Gerät","th.light":"Hell","th.dark":"Dunkel","se.save":"Speichern","se.limits":"Ausgabenlimits pro Gehalt","se.limitsSub":"Optional. Zeigt unter Heute einen Fortschrittsbalken pro Kategorie.","se.saveLimits":"Limits speichern","se.backup":"Sicherung","se.backupSub":"Deine Daten bleiben auf diesem Gerät, in diesem Browser. Lade ab und zu eine Sicherung herunter – damit ziehst du auch auf ein neues Gerät um.","se.dl":"Sicherung herunterladen","se.restore":"Sicherung wiederherstellen","se.over":"Neu beginnen","se.sample":"Beispieldaten laden","se.erase":"Alles löschen","se.overSub":"Beispieldaten ersetzen deine aktuellen Daten. Löschen ist ohne Sicherung endgültig.","se.saved":"Einstellungen gespeichert","se.limitsSaved":"Limits gespeichert","se.dlDone":"Sicherung heruntergeladen","se.restored":"Sicherung wiederhergestellt","se.bad":"Diese Datei ist keine Paycheck-Planner-Sicherung","se.sampleLoaded":"Beispieldaten geladen","se.confReplace":"Meine Daten ersetzen?","se.confErase":"Ja, alles löschen?","se.cantSave":"Speichern fehlgeschlagen – lade unter Einstellungen eine Sicherung herunter","se.common":"Häufig","se.all":"Alle Währungen","se.tour":"Tutorial erneut ansehen",
+"w.title":"Gehalt einrichten","w.body":"Ein paar kurze Fragen, dann bist du fertig. Nimm dein Nettogehalt – den Betrag, der wirklich auf dem Konto landet.","w.next":"Weiter","w.doneTitle":"Fertig!","w.doneBody":"Füge jetzt deine Rechnungen hinzu: Miete, Handy, Abos. Jede landet im Gehalt, das sie bezahlt. Danach erfasst du Einkäufe unter Heute.","w.bills":"Rechnungen hinzufügen","w.today":"Zu Heute",
+"cat.groceries":"Lebensmittel","cat.gas":"Tanken","cat.eating":"Essen gehen","cat.fun":"Freizeit","cat.household":"Haushalt","cat.personal":"Persönlich","cat.kids":"Kinder","cat.pets":"Haustiere","cat.health":"Gesundheit","cat.other":"Sonstiges",
+"sm.rent":"Miete","sm.electric":"Strom","sm.phone":"Handy","sm.internet":"Internet","sm.carIns":"Kfz-Versicherung","sm.gym":"Fitnessstudio","sm.visa":"Kreditkarte","sm.car":"Autokredit","sm.store":"Kundenkarte","sm.emergency":"Notgroschen","sm.xmas":"Weihnachtsgeschenke","sm.trip":"Sommerurlaub","sm.tacos":"Tacos","sm.movie":"Kinoabend","sm.cleaning":"Putzmittel","sm.haircut":"Friseur",
+"tr.back":"Zurück","tr.next":"Weiter","tr.skip":"Tutorial überspringen","tr.of":"{0} von {1}","tr.own":"Mit meinen Daten starten","tr.keep":"Beispiel weiter erkunden","tr.backData":"Zurück zu meinen Daten","tr.demo":"Tutorial · Beispieldaten, nicht dein Geld",
+"h.title":"Hilfe & Tutorial","h.intro":"Alles, was die App kann, erklärt. Tippe auf ein Thema, um es zu öffnen.","h.replay":"Geführte Tour wiederholen","h.guide":"So funktioniert's","h.faq":"Fragen & Lösungen"
+};
+I18N.it={
+"nav.today":"Oggi","nav.paychecks":"Stipendi","nav.bills":"Bollette","nav.debts":"Debiti","nav.savings":"Risparmi","nav.year":"Anno","nav.settings":"Impostazioni",
+"navs.today":"Oggi","navs.paychecks":"Stipendi","navs.bills":"Bollette","navs.debts":"Debiti","navs.savings":"Risparmi","navs.year":"Anno","navs.settings":"Imposta",
+"brand.sub":"Budget per stipendio","help":"Aiuto e tutorial",
+"t.safe":"Puoi spendere oggi","t.left":"Resta di questo stipendio","t.days":"Giorni allo stipendio","t.next":"Prossimo stipendio",
+"t.over":"Hai sforato con questo stipendio. Ferma le spese extra fino al {0}.","t.tight":"Si fa stretta: solo l'essenziale con questo stipendio.","t.ok":"Sei in linea. Oggi spendi al massimo questa cifra e resti nel piano.",
+"t.used":"Stipendio usato","t.log":"Registra una spesa","f.amount":"Importo","f.note":"Nota (facoltativa)","f.notePh":"es. supermercato","f.date":"Data","b.add":"Aggiungi","t.cat":"Categoria",
+"t.noSpend":"Nessuna spesa registrata. Aggiungi qui sopra il tuo primo acquisto.","t.due":"Da pagare con questo stipendio","t.noDue":"Nessuna bolletta prima del prossimo stipendio.","t.still":"Ancora da pagare","t.limits":"Limiti di spesa di questo stipendio",
+"b.delete":"Elimina","pill.autopay":"Addebito automatico","pill.debt":"Debito","toast.logged":"{0} registrati","toast.removed":"Eliminata","toast.amount":"Inserisci un importo","toast.paid":"Segnata come pagata ✓",
+"p.title":"Stipendi","p.intro":"Ogni stipendio ha un compito: bollette, risparmi, spese.","p.current":"Stipendio attuale","p.past":"Passato","p.up":"In arrivo","p.left":"Restano {0}","p.pay":"Stipendio","p.extra":"Entrate extra","p.extraHint":"lavoretto, rimborso… negativo se è arrivato meno","p.bills":"Bollette e rate ({0})","p.sav":"Obiettivi di risparmio","p.xdebt":"Rata extra sui debiti","p.spent":"Speso","p.lts":"Disponibile da spendere","p.show":"Mostra le bollette di questo stipendio",
+"bi.title":"Bollette","bi.total":"Totale mensile","bi.add":"Aggiungi una bolletta","bi.edit":"Modifica bolletta","bi.name":"Nome","bi.namePh":"Affitto","bi.due":"Giorno di scadenza","bi.cat":"Categoria","bi.auto":"Addebito automatico","b.save":"Salva","bi.addBtn":"Aggiungi","bi.colBill":"Bolletta","bi.colDue":"Scadenza","bi.colAmt":"Importo","bi.day":"Giorno {0}","b.edit":"Modifica","bi.empty":"Aggiungi affitto, utenze, telefono e abbonamenti. Finiscono da soli nello stipendio giusto.","bi.deleted":"Bolletta eliminata","bi.added":"Bolletta aggiunta","bi.saved":"Bolletta salvata",
+"bc.housing":"Casa","bc.utilities":"Utenze","bc.phone":"Telefono e internet","bc.insurance":"Assicurazioni","bc.transport":"Trasporti","bc.subs":"Abbonamenti","bc.childcare":"Figli e asilo","bc.other":"Altro",
+"d.title":"Debiti","d.total":"Totale","d.add":"Aggiungi un debito","d.edit":"Modifica debito","d.namePh":"Carta di credito","d.bal":"Saldo","d.apr":"Interesse (TAEG %)","d.min":"Rata minima","d.due":"Giorno di pagamento","d.addBtn":"Aggiungi","d.note":"Aggiorna i saldi ogni mese con l'estratto conto. Le rate minime compaiono come bollette nei tuoi stipendi.","d.plan":"Piano di rimborso","d.method":"Metodo","d.snow":"Valanga di neve · prima il più piccolo","d.aval":"Slavina · prima l'interesse più alto","d.extra":"Rata extra a ogni stipendio","d.emptyPlan":"Aggiungi un debito per vedere quando sarai libero dai debiti.","d.stuck":"Le rate non coprono gli interessi.","d.stuckSub":"Alza la rata minima o aggiungi una rata extra per fare progressi.","d.free":"Senza debiti tra","d.months":"{0} mesi","d.interest":"{0} · circa {1} di interessi","d.paidOff":"Estinto a {0}","d.colDebt":"Debito","d.empty":"Nessun debito inserito. Fortuna tua! Oppure aggiungine uno qui sopra.","d.deleted":"Debito eliminato","d.added":"Debito aggiunto","d.saved":"Debito salvato",
+"s.title":"Obiettivi di risparmio","s.intro":"Scegli una cifra per stipendio. Tocca «Risparmiato» quando la sposti.","s.new":"Nuovo obiettivo","s.edit":"Modifica obiettivo","s.goal":"Obiettivo","s.goalPh":"Fondo emergenze","s.target":"Traguardo","s.already":"Già risparmiato","s.per":"Per stipendio","s.addBtn":"Aggiungi","s.reached":"Raggiunto!","s.of":"su {0}","s.perPay":"{0} per stipendio","s.toGo":"mancano {0} stipendi","s.savedThis":"✓ Risparmiato con questo stipendio","s.saveNow":"Risparmiati {0} con questo stipendio","s.empty":"Parti da un fondo emergenze: anche poco a ogni stipendio fa la differenza.","s.deleted":"Obiettivo eliminato","s.added":"Obiettivo aggiunto","s.saved":"Obiettivo salvato","s.reachedToast":"Obiettivo raggiunto! 🎉","s.savedToast":"Ottimo: {0} risparmiati","s.undone":"Annullato",
+"y.title":"Panoramica {0}","y.bonus":"Mesi con stipendio extra: {0}","y.bonusSub":"Questi mesi hanno 3 giorni di paga. Destina lo stipendio in più a risparmi o debiti.","y.inout":"Entrate e uscite","y.income":"Entrate","y.out":"Bollette + spese + risparmi","y.month":"Mese","y.paydays":"Stipendi","y.bills":"Bollette","y.spent":"Speso","y.sav":"Risparmi","y.net":"Saldo","y.total":"Totale","y.note":"«Speso» mostra quello che hai registrato. I mesi futuri mostrano il tuo piano.","y.prev":"Anno precedente","y.next":"Anno successivo","y.chart":"Entrate e uscite mensili",
+"se.title":"Impostazioni","se.pay":"Il tuo stipendio","se.take":"Stipendio netto per ogni paga","se.freq":"Ogni quanto vieni pagato?","fq.weekly":"Ogni settimana","fq.biweekly":"Ogni 2 settimane","fq.semimonthly":"Due volte al mese (1 e 15)","fq.monthly":"Ogni mese","se.anchor":"Un giorno di paga recente o in arrivo","se.cur":"Valuta","se.lang":"Lingua","se.theme":"Aspetto","th.auto":"Come il dispositivo","th.light":"Chiaro","th.dark":"Scuro","se.save":"Salva impostazioni","se.limits":"Limiti di spesa per stipendio","se.limitsSub":"Facoltativo. Mostra in Oggi una barra di avanzamento per ogni categoria.","se.saveLimits":"Salva limiti","se.backup":"Backup","se.backupSub":"I tuoi dati restano su questo dispositivo, in questo browser. Scarica un backup ogni tanto: serve anche per passare a un altro dispositivo.","se.dl":"Scarica backup","se.restore":"Ripristina backup","se.over":"Ricomincia","se.sample":"Carica dati d'esempio","se.erase":"Cancella tutto","se.overSub":"I dati d'esempio sostituiscono i tuoi. Cancellare è definitivo se non hai un backup.","se.saved":"Impostazioni salvate","se.limitsSaved":"Limiti salvati","se.dlDone":"Backup scaricato","se.restored":"Backup ripristinato","se.bad":"Questo file non è un backup di Paycheck Planner","se.sampleLoaded":"Dati d'esempio caricati","se.confReplace":"Sostituire i miei dati?","se.confErase":"Sì, cancellare tutto?","se.cantSave":"Salvataggio non riuscito: scarica un backup in Impostazioni","se.common":"Più usate","se.all":"Tutte le valute","se.tour":"Rivedi il tutorial",
+"w.title":"Imposta il tuo stipendio","w.body":"Poche domande veloci e hai finito. Usa lo stipendio netto: la cifra che arriva davvero sul conto.","w.next":"Avanti","w.doneTitle":"Fatto!","w.doneBody":"Ora aggiungi le bollette: affitto, telefono, abbonamenti. Ognuna finisce nello stipendio che la paga. Poi registra gli acquisti in Oggi man mano.","w.bills":"Aggiungi le bollette","w.today":"Vai a Oggi",
+"cat.groceries":"Spesa","cat.gas":"Carburante","cat.eating":"Ristoranti","cat.fun":"Svago","cat.household":"Casa","cat.personal":"Personale","cat.kids":"Figli","cat.pets":"Animali","cat.health":"Salute","cat.other":"Altro",
+"sm.rent":"Affitto","sm.electric":"Luce","sm.phone":"Telefono","sm.internet":"Internet","sm.carIns":"Assicurazione auto","sm.gym":"Palestra","sm.visa":"Carta di credito","sm.car":"Prestito auto","sm.store":"Carta negozio","sm.emergency":"Fondo emergenze","sm.xmas":"Regali di Natale","sm.trip":"Vacanza estiva","sm.tacos":"Pizza","sm.movie":"Serata cinema","sm.cleaning":"Detersivi","sm.haircut":"Parrucchiere",
+"tr.back":"Indietro","tr.next":"Avanti","tr.skip":"Salta il tutorial","tr.of":"{0} di {1}","tr.own":"Inizia con i miei dati","tr.keep":"Continua a esplorare l'esempio","tr.backData":"Torna ai miei dati","tr.demo":"Tutorial · dati d'esempio, non i tuoi soldi",
+"h.title":"Aiuto e tutorial","h.intro":"Tutto quello che fa l'app, spiegato. Tocca un argomento per aprirlo.","h.replay":"Rifai la visita guidata","h.guide":"Come si usa","h.faq":"Domande e soluzioni"
+};
+
+const FAQ={};
+FAQ.en=[
+["My data disappeared","Make sure you opened the app in the same browser and on the same device, and not in a private window. If it's still missing, go to Setup → Restore backup and choose your latest backup file."],
+["My payday changed","Go to Setup and set “A recent or upcoming payday” to the new date. Every paycheck is recalculated instantly."],
+["My paycheck amount is different each time","Enter your usual take-home pay in Setup. Then, on the Paychecks tab, type the difference in Extra income: a positive number if it was bigger, a negative one if it was smaller."],
+["Safe to spend is red or zero","You've planned or spent more than this paycheck covers. Stop non-essential spending until payday, lower a savings amount for now, or check for a purchase logged twice."],
+["How do I use it on my phone?","Open the app link in Safari (iPhone) or Chrome (Android). On iPhone tap Share → Add to Home Screen; on Android tap ⋮ → Add to Home screen. It then opens like a regular app."],
+["Can I use it on two devices?","Each device keeps its own data. Download a backup on one device and restore it on the other when you switch. There is no automatic sync."],
+["What about yearly or irregular bills?","Create a savings goal, for example “Car registration” with a target of 240 and 10 per paycheck. When the bill arrives, the money is ready."],
+["Does the app connect to my bank?","No. Nothing is connected or uploaded. You type in your numbers and they stay on your device."],
+["How do I start over?","Setup → Start over → Erase everything (tap twice to confirm). Download a backup first if you might want your data back."]
+];
+FAQ.es=[
+["Mis datos han desaparecido","Comprueba que abriste la app en el mismo navegador y dispositivo, y no en una ventana privada. Si siguen sin aparecer, ve a Ajustes → Restaurar copia y elige tu última copia."],
+["Ha cambiado mi día de cobro","Ve a Ajustes y pon la nueva fecha en «Un día de cobro reciente o próximo». Todos los sueldos se recalculan al instante."],
+["Mi sueldo cambia cada vez","Pon tu sueldo neto habitual en Ajustes. Luego, en Pagos, escribe la diferencia en Ingreso extra: positiva si fue mayor, negativa si fue menor."],
+["Lo que puedo gastar está en rojo o a cero","Has planificado o gastado más de lo que cubre este sueldo. Frena lo no esencial hasta el cobro, reduce un ahorro por ahora o revisa si anotaste una compra dos veces."],
+["¿Cómo la uso en el móvil?","Abre el enlace de la app en Safari (iPhone) o Chrome (Android). En iPhone toca Compartir → Añadir a pantalla de inicio; en Android toca ⋮ → Añadir a pantalla de inicio. Se abrirá como una app normal."],
+["¿Puedo usarla en dos dispositivos?","Cada dispositivo guarda sus propios datos. Descarga una copia en uno y restáurala en el otro cuando cambies. No hay sincronización automática."],
+["¿Y los pagos anuales o irregulares?","Crea una meta de ahorro, por ejemplo «Impuesto del coche» con objetivo 240 y 10 por sueldo. Cuando llegue el pago, el dinero estará listo."],
+["¿La app se conecta a mi banco?","No. No se conecta ni se sube nada. Tú escribes tus números y se quedan en tu dispositivo."],
+["¿Cómo empiezo de cero?","Ajustes → Empezar de cero → Borrar todo (toca dos veces para confirmar). Descarga antes una copia si quizá quieras recuperar los datos."]
+];
+FAQ.fr=[
+["Mes données ont disparu","Vérifiez que vous avez ouvert l'app dans le même navigateur, sur le même appareil, et pas en navigation privée. Sinon, allez dans Réglages → Restaurer une sauvegarde et choisissez la plus récente."],
+["Mon jour de paie a changé","Dans Réglages, mettez la nouvelle date dans « Un jour de paie récent ou à venir ». Toutes les paies sont recalculées aussitôt."],
+["Ma paie change à chaque fois","Indiquez votre salaire net habituel dans Réglages. Puis, dans Paies, saisissez l'écart dans Revenu en plus : positif si c'était plus, négatif si c'était moins."],
+["Le montant dépensable est rouge ou à zéro","Vous avez prévu ou dépensé plus que ce que couvre cette paie. Stoppez le non essentiel jusqu'à la paie, réduisez une épargne pour l'instant, ou vérifiez un achat noté deux fois."],
+["Comment l'utiliser sur mon téléphone ?","Ouvrez le lien de l'app dans Safari (iPhone) ou Chrome (Android). Sur iPhone : Partager → Sur l'écran d'accueil ; sur Android : ⋮ → Ajouter à l'écran d'accueil. Elle s'ouvre alors comme une app."],
+["Puis-je l'utiliser sur deux appareils ?","Chaque appareil garde ses propres données. Téléchargez une sauvegarde sur l'un et restaurez-la sur l'autre quand vous changez. Pas de synchronisation automatique."],
+["Et les dépenses annuelles ou irrégulières ?","Créez un objectif d'épargne, par exemple « Carte grise » avec une cible de 240 et 10 par paie. Quand la facture arrive, l'argent est prêt."],
+["L'app se connecte-t-elle à ma banque ?","Non. Rien n'est connecté ni envoyé. Vous saisissez vos chiffres et ils restent sur votre appareil."],
+["Comment tout recommencer ?","Réglages → Recommencer → Tout effacer (touchez deux fois pour confirmer). Téléchargez d'abord une sauvegarde si vous voulez pouvoir revenir en arrière."]
+];
+FAQ.de=[
+["Meine Daten sind weg","Prüfe, ob du die App im selben Browser und auf demselben Gerät geöffnet hast und nicht im privaten Modus. Falls weiterhin nichts da ist: Einstellungen → Sicherung wiederherstellen und die neueste Sicherung wählen."],
+["Mein Zahltag hat sich geändert","Trage in den Einstellungen das neue Datum bei „Ein letzter oder nächster Zahltag“ ein. Alle Gehälter werden sofort neu berechnet."],
+["Mein Gehalt ist jedes Mal anders","Trage dein übliches Nettogehalt in den Einstellungen ein. Unter Gehälter gibst du dann die Differenz bei Zusatzeinkommen ein: positiv, wenn mehr kam, negativ, wenn weniger."],
+["Der sichere Betrag ist rot oder null","Du hast mehr verplant oder ausgegeben, als dieses Gehalt deckt. Stoppe Unnötiges bis zum Zahltag, reduziere vorerst einen Sparbetrag oder prüfe, ob ein Einkauf doppelt erfasst ist."],
+["Wie nutze ich sie auf dem Handy?","Öffne den App-Link in Safari (iPhone) oder Chrome (Android). Auf dem iPhone: Teilen → Zum Home-Bildschirm; auf Android: ⋮ → Zum Startbildschirm hinzufügen. Dann öffnet sie sich wie eine normale App."],
+["Kann ich sie auf zwei Geräten nutzen?","Jedes Gerät speichert eigene Daten. Lade auf einem Gerät eine Sicherung herunter und stelle sie beim Wechsel auf dem anderen wieder her. Es gibt keine automatische Synchronisierung."],
+["Und jährliche oder unregelmäßige Kosten?","Lege ein Sparziel an, z. B. „Kfz-Steuer“ mit Zielbetrag 240 und 10 pro Gehalt. Wenn die Rechnung kommt, ist das Geld da."],
+["Verbindet sich die App mit meiner Bank?","Nein. Nichts wird verbunden oder hochgeladen. Du gibst deine Zahlen selbst ein und sie bleiben auf deinem Gerät."],
+["Wie fange ich neu an?","Einstellungen → Neu beginnen → Alles löschen (zweimal tippen zum Bestätigen). Lade vorher eine Sicherung herunter, falls du die Daten noch brauchst."]
+];
+FAQ.it=[
+["I miei dati sono spariti","Controlla di aver aperto l'app nello stesso browser e sullo stesso dispositivo, e non in una finestra privata. Se mancano ancora, vai in Impostazioni → Ripristina backup e scegli il backup più recente."],
+["Il mio giorno di paga è cambiato","Vai in Impostazioni e metti la nuova data in «Un giorno di paga recente o in arrivo». Tutti gli stipendi vengono ricalcolati subito."],
+["Il mio stipendio cambia ogni volta","Inserisci in Impostazioni lo stipendio netto abituale. Poi, nella scheda Stipendi, scrivi la differenza in Entrate extra: positiva se è arrivato di più, negativa se di meno."],
+["Quanto posso spendere è rosso o a zero","Hai pianificato o speso più di quanto copre questo stipendio. Ferma le spese non essenziali fino alla paga, riduci per ora un risparmio o controlla di non aver registrato un acquisto due volte."],
+["Come la uso sul telefono?","Apri il link dell'app in Safari (iPhone) o Chrome (Android). Su iPhone tocca Condividi → Aggiungi alla schermata Home; su Android tocca ⋮ → Aggiungi a schermata Home. Si aprirà come una normale app."],
+["Posso usarla su due dispositivi?","Ogni dispositivo conserva i propri dati. Scarica un backup su uno e ripristinalo sull'altro quando cambi. Non c'è sincronizzazione automatica."],
+["E le spese annuali o irregolari?","Crea un obiettivo di risparmio, per esempio «Bollo auto» con traguardo 240 e 10 a stipendio. Quando arriva il pagamento, i soldi sono pronti."],
+["L'app si collega alla mia banca?","No. Non si collega a nulla e non carica niente. Inserisci tu i tuoi numeri e restano sul tuo dispositivo."],
+["Come ricomincio da zero?","Impostazioni → Ricomincia → Cancella tutto (tocca due volte per confermare). Prima scarica un backup se potresti voler recuperare i dati."]
+];
+</script>
+
+<script>
+/* ===== Calm UI: extra labels, short tour, short guide ===== */
+Object.assign(I18N.en,{"se.palette":"Colors","pal.sage":"Sage","pal.blush":"Blush","pal.lavender":"Lavender","pal.classic":"Classic","nav.savings":"Goals","nav.more":"More","b.back":"← More","t.add":"+ Add spending","t.line":"{0} left · {1} days to payday","t.ok":"You're on track 👍","t.tight":"Go easy: essentials only.","t.over":"Pause extras until {0}.","t.bills":"Coming up","t.noBills":"No bills until payday ✓","t.more":"+{0} more","t.recent":"Latest spending","t.all":"Show all","t.less":"Show less","t.noSpend":"Nothing yet. Tap “+ Add spending” when you buy something.","sh.spend":"New spending","sh.morecats":"More categories","sh.details":"Add note or date","b.cancel":"Cancel","sh.del2":"Tap again to delete","sh.exp":"Purchase","bi.addBig":"+ Add bill","d.addBig":"+ Add debt","s.addBig":"+ New goal","tap":"Tap an item to change or delete it.","s.do":"I set aside {0}","s.did":"✓ Done this paycheck","d.adjust":"Adjust the plan","p.extraQ":"Different amount this time?","y.details":"Month by month","se.more":"Start over or example","m.paychecks":"What's left in the next paychecks","m.debts":"Cards, loans, debt-free date","m.year":"The whole year at a glance","m.settings":"Paycheck, currency, language, backup","m.help":"Short guide, questions, tutorial"});
+Object.assign(I18N.it,{"se.palette":"Colori","pal.sage":"Salvia","pal.blush":"Cipria","pal.lavender":"Lavanda","pal.classic":"Classico","nav.savings":"Obiettivi","nav.more":"Altro","b.back":"← Altro","t.add":"+ Aggiungi spesa","t.line":"{0} rimasti · {1} giorni allo stipendio","t.ok":"Sei in linea 👍","t.tight":"Vai piano: solo l'essenziale.","t.over":"Stop spese extra fino al {0}.","t.bills":"In arrivo","t.noBills":"Nessuna bolletta fino allo stipendio ✓","t.more":"+ altre {0}","t.recent":"Ultime spese","t.all":"Mostra tutte","t.less":"Mostra meno","t.noSpend":"Ancora niente. Tocca «+ Aggiungi spesa» quando compri qualcosa.","sh.spend":"Nuova spesa","sh.morecats":"Altre categorie","sh.details":"Aggiungi nota o data","b.cancel":"Annulla","sh.del2":"Tocca di nuovo per eliminare","sh.exp":"Spesa","bi.addBig":"+ Aggiungi bolletta","d.addBig":"+ Aggiungi debito","s.addBig":"+ Nuovo obiettivo","tap":"Tocca una voce per modificarla o eliminarla.","s.do":"Ho messo da parte {0}","s.did":"✓ Fatto per questo stipendio","d.adjust":"Regola il piano","p.extraQ":"Importo diverso questa volta?","y.details":"Mese per mese","se.more":"Ricomincia o esempio","m.paychecks":"Quanto resta nei prossimi stipendi","m.debts":"Carte, prestiti, data senza debiti","m.year":"Tutto l'anno a colpo d'occhio","m.settings":"Stipendio, valuta, lingua, backup","m.help":"Guida breve, domande, tutorial"});
+Object.assign(I18N.es,{"se.palette":"Colores","pal.sage":"Salvia","pal.blush":"Rosa","pal.lavender":"Lavanda","pal.classic":"Clásico","nav.paychecks":"Sueldos","nav.savings":"Metas","nav.more":"Más","b.back":"← Más","t.add":"+ Añadir gasto","t.line":"Quedan {0} · {1} días para el cobro","t.ok":"Vas bien 👍","t.tight":"Con calma: solo lo esencial.","t.over":"Sin extras hasta el {0}.","t.bills":"Próximos pagos","t.noBills":"Sin facturas hasta el cobro ✓","t.more":"+{0} más","t.recent":"Últimos gastos","t.all":"Ver todos","t.less":"Ver menos","t.noSpend":"Nada todavía. Toca «+ Añadir gasto» cuando compres algo.","sh.spend":"Nuevo gasto","sh.morecats":"Más categorías","sh.details":"Añadir nota o fecha","b.cancel":"Cancelar","sh.del2":"Toca otra vez para borrar","sh.exp":"Gasto","bi.addBig":"+ Añadir factura","d.addBig":"+ Añadir deuda","s.addBig":"+ Nueva meta","tap":"Toca un elemento para cambiarlo o borrarlo.","s.do":"He apartado {0}","s.did":"✓ Hecho este sueldo","d.adjust":"Ajustar el plan","p.extraQ":"¿Importe distinto esta vez?","y.details":"Mes a mes","se.more":"Empezar de cero o ejemplo","m.paychecks":"Lo que queda en los próximos sueldos","m.debts":"Tarjetas, préstamos, fecha sin deudas","m.year":"Todo el año de un vistazo","m.settings":"Sueldo, moneda, idioma, copia","m.help":"Guía breve, preguntas, tutorial"});
+Object.assign(I18N.fr,{"se.palette":"Couleurs","pal.sage":"Sauge","pal.blush":"Poudré","pal.lavender":"Lavande","pal.classic":"Classique","nav.savings":"Objectifs","nav.more":"Plus","b.back":"← Plus","t.add":"+ Ajouter une dépense","t.line":"Reste {0} · {1} jours avant la paie","t.ok":"Tout va bien 👍","t.tight":"Doucement : l'essentiel seulement.","t.over":"Stop extras jusqu'au {0}.","t.bills":"À venir","t.noBills":"Aucune facture avant la paie ✓","t.more":"+{0} autres","t.recent":"Dernières dépenses","t.all":"Tout voir","t.less":"Voir moins","t.noSpend":"Rien pour l'instant. Touchez « + Ajouter une dépense » après un achat.","sh.spend":"Nouvelle dépense","sh.morecats":"Plus de catégories","sh.details":"Ajouter note ou date","b.cancel":"Annuler","sh.del2":"Touchez encore pour supprimer","sh.exp":"Dépense","bi.addBig":"+ Ajouter une facture","d.addBig":"+ Ajouter une dette","s.addBig":"+ Nouvel objectif","tap":"Touchez un élément pour le modifier ou le supprimer.","s.do":"J'ai mis de côté {0}","s.did":"✓ Fait pour cette paie","d.adjust":"Ajuster le plan","p.extraQ":"Montant différent cette fois ?","y.details":"Mois par mois","se.more":"Recommencer ou exemple","m.paychecks":"Ce qui reste sur les prochaines paies","m.debts":"Cartes, crédits, date sans dettes","m.year":"L'année d'un coup d'œil","m.settings":"Paie, devise, langue, sauvegarde","m.help":"Guide court, questions, tutoriel"});
+Object.assign(I18N.de,{"se.palette":"Farben","pal.sage":"Salbei","pal.blush":"Puder","pal.lavender":"Lavendel","pal.classic":"Klassisch","nav.savings":"Ziele","nav.more":"Mehr","b.back":"← Mehr","t.add":"+ Ausgabe hinzufügen","t.line":"{0} übrig · {1} Tage bis Zahltag","t.ok":"Alles im Plan 👍","t.tight":"Langsam: nur das Nötigste.","t.over":"Keine Extras bis {0}.","t.bills":"Demnächst fällig","t.noBills":"Keine Rechnungen bis zum Zahltag ✓","t.more":"+{0} weitere","t.recent":"Letzte Ausgaben","t.all":"Alle zeigen","t.less":"Weniger","t.noSpend":"Noch nichts. Tippe „+ Ausgabe hinzufügen“, wenn du etwas kaufst.","sh.spend":"Neue Ausgabe","sh.morecats":"Mehr Kategorien","sh.details":"Notiz oder Datum","b.cancel":"Abbrechen","sh.del2":"Nochmal tippen zum Löschen","sh.exp":"Ausgabe","bi.addBig":"+ Rechnung hinzufügen","d.addBig":"+ Schuld hinzufügen","s.addBig":"+ Neues Ziel","tap":"Tippe einen Eintrag an, um ihn zu ändern oder zu löschen.","s.do":"{0} zurückgelegt","s.did":"✓ Erledigt für dieses Gehalt","d.adjust":"Plan anpassen","p.extraQ":"Diesmal anderer Betrag?","y.details":"Monat für Monat","se.more":"Neu beginnen oder Beispiel","m.paychecks":"Was in den nächsten Gehältern übrig bleibt","m.debts":"Karten, Kredite, schuldenfrei-Datum","m.year":"Das ganze Jahr im Blick","m.settings":"Gehalt, Währung, Sprache, Sicherung","m.help":"Kurzanleitung, Fragen, Tutorial"});
+
+const QUICK={
+en:[["Hi! 👋","Quick 1-minute tour. These are example numbers, not your money. Pick language, currency and colors:"],["Your one number","This is how much you can spend today and still reach payday. Green = fine. Orange = go easy. Red = stop extras."],["Spent something?","Tap here. Type the amount, pick a category, done. Five seconds."],["Bills take care of themselves","Bills due before payday show up here on their own. Tick them when paid."],["Everything else","Bills and Goals: add them once. Debts, year view, settings and help live in More."],["That's it!","Next: 3 quick questions about your paycheck. You can replay this tour anytime in More → Help."]],
+it:[["Ciao! 👋","Tour veloce, 1 minuto. Sono numeri d'esempio, non i tuoi soldi. Scegli lingua, valuta e colori:"],["Il tuo unico numero","È quanto puoi spendere oggi per arrivare allo stipendio. Verde = tutto ok. Arancione = vai piano. Rosso = stop extra."],["Hai speso qualcosa?","Tocca qui. Scrivi l'importo, scegli la categoria, fatto. Cinque secondi."],["Le bollette vanno da sole","Le bollette in scadenza prima dello stipendio compaiono qui da sole. Spuntale quando le paghi."],["Tutto il resto","Bollette e Obiettivi: li aggiungi una volta sola. Debiti, anno, impostazioni e aiuto sono in Altro."],["Tutto qui!","Ora 3 domande veloci sul tuo stipendio. Puoi rivedere il tour quando vuoi in Altro → Aiuto."]],
+es:[["¡Hola! 👋","Visita rápida, 1 minuto. Son números de ejemplo, no tu dinero. Elige idioma, moneda y colores:"],["Tu único número","Es lo que puedes gastar hoy y llegar al cobro. Verde = bien. Naranja = con calma. Rojo = nada de extras."],["¿Has gastado algo?","Toca aquí. Escribe el importe, elige categoría y listo. Cinco segundos."],["Las facturas van solas","Las facturas que vencen antes del cobro aparecen aquí solas. Márcalas al pagarlas."],["Todo lo demás","Facturas y Metas: se añaden una sola vez. Deudas, año, ajustes y ayuda están en Más."],["¡Eso es todo!","Ahora 3 preguntas rápidas sobre tu sueldo. Puedes repetir la visita en Más → Ayuda."]],
+fr:[["Bonjour ! 👋","Visite rapide, 1 minute. Ce sont des chiffres d'exemple, pas votre argent. Choisissez langue, devise et couleurs :"],["Votre seul chiffre","C'est ce que vous pouvez dépenser aujourd'hui en tenant jusqu'à la paie. Vert = ça va. Orange = doucement. Rouge = stop extras."],["Une dépense ?","Touchez ici. Le montant, une catégorie, c'est fait. Cinq secondes."],["Les factures se gèrent seules","Les factures dues avant la paie apparaissent ici toutes seules. Cochez-les une fois payées."],["Tout le reste","Factures et Objectifs : à ajouter une seule fois. Dettes, année, réglages et aide sont dans Plus."],["C'est tout !","Maintenant 3 questions rapides sur votre paie. Revoir la visite : Plus → Aide."]],
+de:[["Hallo! 👋","Kurze Tour, 1 Minute. Das sind Beispielzahlen, nicht dein Geld. Wähle Sprache, Währung und Farben:"],["Deine eine Zahl","So viel kannst du heute ausgeben und kommst trotzdem bis zum Zahltag. Grün = passt. Orange = langsam. Rot = keine Extras."],["Was ausgegeben?","Hier tippen. Betrag, Kategorie, fertig. Fünf Sekunden."],["Rechnungen laufen von selbst","Rechnungen, die vor dem Zahltag fällig sind, erscheinen hier von selbst. Abhaken, wenn bezahlt."],["Alles andere","Rechnungen und Ziele: einmal eintragen. Schulden, Jahr, Einstellungen und Hilfe findest du unter Mehr."],["Das war's!","Jetzt 3 kurze Fragen zu deinem Gehalt. Die Tour gibt's jederzeit unter Mehr → Hilfe."]]
+};
+
+const GUIDE={
+en:[["The big number","It's what you can spend today. Paycheck + extra income − bills due before payday − savings − extra debt payment − what you've spent, divided by the days to payday."],["Colors","Green: on track. Orange: under 10% of the paycheck left, essentials only. Red: you're over, pause extras until payday."],["Add a spending","Tap “+ Add spending”, type the amount, pick a category, Save. Mistake? Tap the purchase in the list to delete it. Don't add bills here: they're counted automatically."],["Bills","Add each monthly bill once: name, amount, due day. Day 29–31 uses the last day in shorter months. Tick it on Today when paid. Yearly bills? Make a savings goal instead. Tap a bill to change or delete it."],["Savings goals","Pick an amount per paycheck: it's set aside automatically. When you actually move the money, tap “I set aside…”. Tap again to undo."],["Debts","More → Debts. Add balance, interest and minimum payment. Snowball pays the smallest first, avalanche the highest interest first. Update balances once a month."],["Paychecks and year","More → Paychecks shows what's left in the next paychecks; got more or less than usual? Type the difference there. More → Year shows months with 3 paydays: perfect for saving."],["Privacy and backup","Your data stays only in this browser on this device. Download a backup every week in More → Setup. To change phone, restore that file there."],["2-minute routine","Daily: check the number, add purchases. Payday: move savings, tap the buttons. Monthly: update debts, download a backup."]],
+it:[["Il numero grande","È quanto puoi spendere oggi. Stipendio + entrate extra − bollette prima dello stipendio − risparmi − rata extra − già speso, diviso per i giorni allo stipendio."],["I colori","Verde: in linea. Arancione: resta meno del 10% dello stipendio, solo l'essenziale. Rosso: hai sforato, stop extra fino allo stipendio."],["Aggiungere una spesa","Tocca «+ Aggiungi spesa», scrivi l'importo, scegli la categoria, Salva. Hai sbagliato? Tocca la spesa nell'elenco per eliminarla. Le bollette non vanno qui: sono già contate."],["Bollette","Aggiungi ogni bolletta mensile una volta: nome, importo, giorno di scadenza. I giorni 29–31 diventano l'ultimo giorno nei mesi più corti. Spuntala in Oggi quando la paghi. Spese annuali? Crea un obiettivo. Tocca una bolletta per modificarla o eliminarla."],["Obiettivi di risparmio","Scegli una cifra per stipendio: viene messa da parte in automatico. Quando sposti davvero i soldi, tocca «Ho messo da parte…». Toccalo di nuovo per annullare."],["Debiti","Altro → Debiti. Inserisci saldo, interesse e rata minima. Valanga di neve estingue prima il più piccolo, slavina prima l'interesse più alto. Aggiorna i saldi una volta al mese."],["Stipendi e anno","Altro → Stipendi mostra quanto resta nei prossimi stipendi; hai preso più o meno del solito? Scrivi lì la differenza. Altro → Anno mostra i mesi con 3 stipendi: perfetti per risparmiare."],["Privacy e backup","I dati restano solo in questo browser su questo dispositivo. Scarica un backup ogni settimana in Altro → Impostazioni. Se cambi telefono, ripristina lì quel file."],["Routine da 2 minuti","Ogni giorno: guarda il numero, aggiungi le spese. Giorno di paga: sposta i risparmi, tocca i pulsanti. Ogni mese: aggiorna i debiti, scarica un backup."]],
+es:[["El número grande","Es lo que puedes gastar hoy. Sueldo + ingresos extra − facturas antes del cobro − ahorro − pago extra de deuda − lo gastado, dividido entre los días hasta el cobro."],["Los colores","Verde: vas bien. Naranja: queda menos del 10% del sueldo, solo lo esencial. Rojo: te has pasado, frena los extras hasta el cobro."],["Añadir un gasto","Toca «+ Añadir gasto», escribe el importe, elige categoría y Guardar. ¿Error? Toca el gasto en la lista para borrarlo. Las facturas no van aquí: ya se cuentan solas."],["Facturas","Añade cada factura mensual una vez: nombre, importe, día de vencimiento. Los días 29–31 pasan al último día en meses cortos. Márcala en Hoy al pagarla. ¿Pagos anuales? Crea una meta. Toca una factura para cambiarla o borrarla."],["Metas de ahorro","Elige una cantidad por sueldo: se aparta sola. Cuando muevas de verdad el dinero, toca «He apartado…». Vuelve a tocar para deshacer."],["Deudas","Más → Deudas. Añade saldo, interés y pago mínimo. Bola de nieve paga primero la menor; avalancha, el interés más alto. Actualiza los saldos cada mes."],["Sueldos y año","Más → Sueldos muestra lo que queda en los próximos sueldos; ¿cobraste más o menos? Escribe ahí la diferencia. Más → Año muestra los meses con 3 cobros: ideales para ahorrar."],["Privacidad y copia","Tus datos solo están en este navegador de este dispositivo. Descarga una copia cada semana en Más → Ajustes. Si cambias de móvil, restáurala allí."],["Rutina de 2 minutos","Cada día: mira el número, añade gastos. Día de cobro: mueve el ahorro, toca los botones. Cada mes: actualiza deudas, descarga una copia."]],
+fr:[["Le grand chiffre","C'est ce que vous pouvez dépenser aujourd'hui. Paie + revenus en plus − factures avant la paie − épargne − remboursement en plus − déjà dépensé, divisé par les jours jusqu'à la paie."],["Les couleurs","Vert : tout va bien. Orange : moins de 10 % de la paie restante, l'essentiel seulement. Rouge : dépassement, stop extras jusqu'à la paie."],["Ajouter une dépense","Touchez « + Ajouter une dépense », le montant, une catégorie, Enregistrer. Une erreur ? Touchez la dépense dans la liste pour la supprimer. Pas de factures ici : elles sont déjà comptées."],["Factures","Ajoutez chaque facture mensuelle une fois : nom, montant, jour d'échéance. Les jours 29–31 passent au dernier jour des mois courts. Cochez-la dans Aujourd'hui une fois payée. Dépense annuelle ? Créez un objectif. Touchez une facture pour la modifier ou la supprimer."],["Objectifs d'épargne","Choisissez un montant par paie : il est mis de côté automatiquement. Quand vous virez vraiment l'argent, touchez « J'ai mis de côté… ». Touchez à nouveau pour annuler."],["Dettes","Plus → Dettes. Indiquez solde, taux et paiement minimum. Boule de neige rembourse d'abord la plus petite, avalanche le taux le plus élevé. Mettez les soldes à jour chaque mois."],["Paies et année","Plus → Paies montre ce qui reste sur les prochaines paies ; touché plus ou moins que d'habitude ? Indiquez l'écart. Plus → Année montre les mois à 3 paies : parfaits pour épargner."],["Confidentialité et sauvegarde","Vos données restent uniquement dans ce navigateur, sur cet appareil. Téléchargez une sauvegarde chaque semaine dans Plus → Réglages. Nouveau téléphone ? Restaurez-y ce fichier."],["Routine de 2 minutes","Chaque jour : regardez le chiffre, ajoutez vos achats. Jour de paie : virez l'épargne, touchez les boutons. Chaque mois : mettez à jour les dettes, téléchargez une sauvegarde."]],
+de:[["Die große Zahl","So viel kannst du heute ausgeben. Gehalt + Zusatzeinkommen − Rechnungen bis zum Zahltag − Sparen − Sondertilgung − schon Ausgegebenes, geteilt durch die Tage bis zum Zahltag."],["Die Farben","Grün: alles im Plan. Orange: weniger als 10 % vom Gehalt übrig, nur Nötiges. Rot: drüber, keine Extras bis zum Zahltag."],["Ausgabe hinzufügen","Tippe „+ Ausgabe hinzufügen“, Betrag eingeben, Kategorie wählen, Speichern. Vertippt? Tippe die Ausgabe in der Liste an, um sie zu löschen. Rechnungen nicht hier: Die werden automatisch gezählt."],["Rechnungen","Trag jede monatliche Rechnung einmal ein: Name, Betrag, Fälligkeitstag. Tag 29–31 wird in kürzeren Monaten zum letzten Tag. Unter Heute abhaken, wenn bezahlt. Jährliche Kosten? Leg ein Ziel an. Tippe eine Rechnung an, um sie zu ändern oder zu löschen."],["Sparziele","Wähle einen Betrag pro Gehalt: Er wird automatisch zurückgelegt. Wenn du das Geld wirklich überweist, tippe „… zurückgelegt“. Nochmal tippen macht es rückgängig."],["Schulden","Mehr → Schulden. Restschuld, Zins und Mindestrate eintragen. Schneeball tilgt zuerst die kleinste, Lawine den höchsten Zins. Restschulden einmal im Monat aktualisieren."],["Gehälter und Jahr","Mehr → Gehälter zeigt, was in den nächsten Gehältern übrig bleibt; mehr oder weniger bekommen? Trag dort die Differenz ein. Mehr → Jahr zeigt Monate mit 3 Zahltagen: ideal zum Sparen."],["Datenschutz und Sicherung","Deine Daten bleiben nur in diesem Browser auf diesem Gerät. Lade jede Woche unter Mehr → Einstellungen eine Sicherung herunter. Neues Handy? Dort wiederherstellen."],["2-Minuten-Routine","Täglich: Zahl ansehen, Ausgaben eintragen. Zahltag: Sparbeträge überweisen, Buttons tippen. Monatlich: Schulden aktualisieren, Sicherung herunterladen."]]
+};
+FAQ.en[2]=["My paycheck amount is different each time","Enter your usual take-home pay in Setup. When a paycheck is different, open More → Paychecks and type the difference: positive if bigger, negative if smaller."];
+FAQ.it[2]=["Il mio stipendio cambia ogni volta","Metti lo stipendio netto abituale in Impostazioni. Quando uno è diverso, apri Altro → Stipendi e scrivi la differenza: positiva se è di più, negativa se è di meno."];
+FAQ.es[2]=["Mi sueldo cambia cada vez","Pon tu sueldo neto habitual en Ajustes. Cuando uno sea distinto, abre Más → Sueldos y escribe la diferencia: positiva si fue mayor, negativa si fue menor."];
+FAQ.fr[2]=["Ma paie change à chaque fois","Indiquez votre salaire net habituel dans Réglages. Quand une paie diffère, ouvrez Plus → Paies et saisissez l'écart : positif si plus, négatif si moins."];
+FAQ.de[2]=["Mein Gehalt ist jedes Mal anders","Trag dein übliches Nettogehalt in den Einstellungen ein. Ist ein Gehalt anders, öffne Mehr → Gehälter und trag die Differenz ein: positiv bei mehr, negativ bei weniger."];
+FAQ.en[8]=["How do I start over?","More → Setup → Erase everything (tap twice). Download a backup first if you might want your data back."];
+FAQ.it[8]=["Come ricomincio da zero?","Altro → Impostazioni → Cancella tutto (tocca due volte). Prima scarica un backup se potresti volere i dati indietro."];
+FAQ.es[8]=["¿Cómo empiezo de cero?","Más → Ajustes → Borrar todo (toca dos veces). Antes descarga una copia si quizá quieras recuperar los datos."];
+FAQ.fr[8]=["Comment tout recommencer ?","Plus → Réglages → Tout effacer (touchez deux fois). Téléchargez d'abord une sauvegarde si besoin."];
+FAQ.de[8]=["Wie fange ich neu an?","Mehr → Einstellungen → Alles löschen (zweimal tippen). Lade vorher eine Sicherung herunter, falls du die Daten noch brauchst."];
+</script>
+<script>
+(function(){
+"use strict";
+const KEY="paycheckPlanner.v1";
+const TABS=["today","bills","savings","more"];
+const SUB=["paychecks","debts","year","settings","help"];
+const ICON={today:"🏠",bills:"📅",savings:"🎯",more:"☰"};
+const MICON={paychecks:"💵",debts:"💳",year:"📊",settings:"⚙️",help:"❓"};
+const CAT_E={groceries:"🛒",gas:"⛽",eating:"🍔",fun:"🎉",household:"🏠",personal:"💇",kids:"🧸",pets:"🐾",health:"💊",other:"📦"};
+const BC_E={housing:"🏠",utilities:"💡",phone:"📱",insurance:"🛡️",transport:"🚗",subs:"📺",childcare:"🧒",other:"📄"};
+const PALS={sage:["#4a6e51","#f6f3ec"],blush:["#9a4b60","#fbf5f2"],lavender:["#6453ad","#f6f4fa"],classic:["#3b5bdb","#f4f6fa"]};
+const paletteSwatches=()=>`<div class="swatches" role="group" aria-label="${T("se.palette")}">${Object.keys(PALS).map(k=>`<button type="button" class="swatch" data-palette="${k}" aria-pressed="${S.settings.palette===k}"><span class="dot" style="background:linear-gradient(135deg,${PALS[k][0]} 50%,${PALS[k][1]} 50%)"></span>${T("pal."+k)}</button>`).join("")}</div>`;
+const MAIN_CATS=["groceries","gas","eating","fun","household","other"];
+const FREQS=["weekly","biweekly","semimonthly","monthly"];
+const PER_MONTH={weekly:52/12,biweekly:26/12,semimonthly:2,monthly:1};
+const CATS=["groceries","gas","eating","fun","household","personal","kids","pets","health","other"];
+const BILLCATS=["housing","utilities","phone","insurance","transport","subs","childcare","other"];
+const TOP_CUR=["USD","EUR","GBP","CAD","AUD","NZD","CHF","MXN","BRL","INR","ZAR","SEK","NOK","DKK","PLN","JPY","SGD","HKD","AED","PHP"];
+const FALLBACK_CUR=TOP_CUR.concat(["ARS","CLP","COP","CZK","HUF","IDR","ILS","KRW","MYR","NGN","PEN","RON","SAR","THB","TRY","TWD","UAH","VND","EGP","KES","PKR","BGN","ISK","CNY","QAR","KWD","MAD"]);
+const STEPS=[{lang:1},{tab:"today",sel:".hero"},{tab:"today",sel:"#addSpend"},{tab:"today",sel:"#billsCard"},{tab:"today",sel:"#tabs"},{end:1}];
+
+/* ---------- language ---------- */
+function detectCur(){const l=navigator.language||"en-US";const r=(l.split("-")[1]||"").toUpperCase();const M={US:"USD",GB:"GBP",CA:"CAD",AU:"AUD",NZ:"NZD",IE:"EUR",IT:"EUR",ES:"EUR",FR:"EUR",DE:"EUR",AT:"EUR",BE:"EUR",NL:"EUR",PT:"EUR",FI:"EUR",GR:"EUR",LU:"EUR",CH:"CHF",MX:"MXN",BR:"BRL",IN:"INR",ZA:"ZAR",SE:"SEK",NO:"NOK",DK:"DKK",PL:"PLN",JP:"JPY",SG:"SGD",HK:"HKD",AR:"ARS",CL:"CLP",CO:"COP",PE:"PEN"};if(M[r])return M[r];return {it:"EUR",es:"EUR",fr:"EUR",de:"EUR"}[l.slice(0,2)]||"USD";}
+function detectLang(){const n=(navigator.language||"en").slice(0,2).toLowerCase();return I18N[n]?n:"en";}
+function lang(){return (S&&S.settings&&I18N[S.settings.lang])?S.settings.lang:"en";}
+function loc(){const l=lang();if(l==="en"){const c=S.settings.currency;return c==="GBP"?"en-GB":c==="CAD"?"en-CA":c==="AUD"?"en-AU":c==="NZD"?"en-NZ":"en-US";}return (LANGS.find(x=>x[0]===l)||LANGS[0])[2];}
+function t(k){const d=I18N[lang()];let s=(d&&d[k]!=null)?d[k]:(I18N.en[k]!=null?I18N.en[k]:k);for(let i=1;i<arguments.length;i++)s=s.split("{"+(i-1)+"}").join(arguments[i]);return s;}
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const T=function(){return esc(t.apply(null,arguments));};
+const catLabel=c=>I18N.en["cat."+c]?t("cat."+c):c;
+const billCatLabel=c=>I18N.en["bc."+c]?t("bc."+c):c;
+const catE=c=>CAT_E[c]||"•";
+
+/* ---------- state ---------- */
+function blank(){return{v:2,onboarded:false,tourSeen:false,settings:{currency:detectCur(),lang:detectLang(),freq:"biweekly",payAmount:0,anchor:iso(today()),extraDebt:0,strategy:"snowball",theme:"auto",palette:"sage"},
+  categories:CATS.slice(),buckets:{},bills:[],debts:[],goals:[],expenses:[],paid:{},saved:{},incomeAdj:{}};}
+let demo=false;
+let S=load();
+function migrate(d){
+  const map={"Groceries":"groceries","Gas":"gas","Eating out":"eating","Fun":"fun","Household":"household","Personal":"personal","Kids":"kids","Pets":"pets","Health":"health","Other":"other"};
+  const bmap={"Housing":"housing","Utilities":"utilities","Phone & internet":"phone","Insurance":"insurance","Transport":"transport","Subscriptions":"subs","Childcare":"childcare","Other":"other"};
+  if(Array.isArray(d.categories))d.categories=d.categories.map(c=>map[c]||c);
+  if(d.buckets){const nb={};Object.keys(d.buckets).forEach(k=>nb[map[k]||k]=d.buckets[k]);d.buckets=nb;}
+  (d.expenses||[]).forEach(e=>{e.category=map[e.category]||e.category;});
+  (d.bills||[]).forEach(b=>{b.category=bmap[b.category]||b.category;});
+  if(d.settings&&!d.settings.lang)d.settings.lang=detectLang();
+  if(d.settings)delete d.settings.locale;
+  if(d.onboarded&&d.tourSeen===undefined)d.tourSeen=true;
+  return d;
+}
+function hydrate(d){d=migrate(d);return Object.assign(blank(),d,{settings:Object.assign(blank().settings,d.settings||{})});}
+function load(){try{const raw=localStorage.getItem(KEY);if(raw)return hydrate(JSON.parse(raw));}catch(e){}return blank();}
+function save(){if(demo)return;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){toast(t("se.cantSave"));}}
+const uid=()=>Math.random().toString(36).slice(2,10);
+
+/* ---------- dates ---------- */
+function today(){const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function parse(s){const p=String(s||"").split("-").map(Number);if(p.length<3||p.some(isNaN))return today();return new Date(p[0],p[1]-1,p[2]);}
+function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function dim(y,m){return new Date(y,m+1,0).getDate();}
+function dayDiff(a,b){return Math.round((b-a)/864e5);}
+function ym(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
+const fmtD=d=>d.toLocaleDateString(loc(),{month:"short",day:"numeric"});
+const fmtDW=d=>d.toLocaleDateString(loc(),{weekday:"short",month:"short",day:"numeric"});
+
+/* ---------- money ---------- */
+function money(n,opts){try{return new Intl.NumberFormat(loc(),Object.assign({style:"currency",currency:S.settings.currency},opts||{})).format(n||0);}catch(e){return (n||0).toFixed(2)+" "+S.settings.currency;}}
+const money0=n=>money(n,{maximumFractionDigits:0,minimumFractionDigits:0});
+function num(v){if(typeof v==="number")return isFinite(v)?v:0;let s=String(v==null?"":v).trim().replace(/[\s ']/g,"");const lc=s.lastIndexOf(","),ld=s.lastIndexOf(".");
+  if(lc>ld){s=s.replace(/\./g,"").replace(",",".");}else{s=s.replace(/,/g,"");}
+  const n=parseFloat(s.replace(/[^0-9.\-]/g,""));return isFinite(n)?n:0;}
+function currencyOptions(sel){
+  let codes;try{codes=Intl.supportedValuesOf("currency");}catch(e){codes=FALLBACK_CUR;}
+  let dn=null;try{dn=new Intl.DisplayNames([loc()],{type:"currency"});}catch(e){}
+  const name=c=>{let n=c;try{n=dn?dn.of(c):c;}catch(e){}let sym="";try{sym=new Intl.NumberFormat(loc(),{style:"currency",currency:c,currencyDisplay:"narrowSymbol"}).formatToParts(0).find(p=>p.type==="currency").value;}catch(e){}
+    return n+(sym&&sym!==c?" ("+sym+")":"")+" — "+c;};
+  const top=TOP_CUR.filter(c=>codes.includes(c));const rest=codes.filter(c=>!top.includes(c)).sort((a,b)=>name(a).localeCompare(name(b),loc()));
+  if(!codes.includes(sel))rest.unshift(sel);
+  const o=c=>`<option value="${c}" ${c===sel?"selected":""}>${esc(name(c))}</option>`;
+  return `<optgroup label="${T("se.common")}">${top.map(o).join("")}</optgroup><optgroup label="${T("se.all")}">${rest.map(o).join("")}</optgroup>`;
+}
+const langOptions=sel=>LANGS.map(([k,l])=>`<option value="${k}" ${k===sel?"selected":""}>${l}</option>`).join("");
+
+/* ---------- pay periods ---------- */
+function periodStartFor(date){
+  const f=S.settings.freq,a=parse(S.settings.anchor);
+  if(f==="weekly"||f==="biweekly"){const step=f==="weekly"?7:14;const k=Math.floor(dayDiff(a,date)/step);return addDays(a,k*step);}
+  if(f==="semimonthly"){return new Date(date.getFullYear(),date.getMonth(),date.getDate()>=15?15:1);}
+  const day=a.getDate();const thisM=new Date(date.getFullYear(),date.getMonth(),Math.min(day,dim(date.getFullYear(),date.getMonth())));
+  if(date>=thisM)return thisM;const pm=new Date(date.getFullYear(),date.getMonth()-1,1);return new Date(pm.getFullYear(),pm.getMonth(),Math.min(day,dim(pm.getFullYear(),pm.getMonth())));
+}
+function nextStart(start){
+  const f=S.settings.freq;
+  if(f==="weekly")return addDays(start,7);if(f==="biweekly")return addDays(start,14);
+  if(f==="semimonthly")return start.getDate()===1?new Date(start.getFullYear(),start.getMonth(),15):new Date(start.getFullYear(),start.getMonth()+1,1);
+  const day=parse(S.settings.anchor).getDate();const nm=new Date(start.getFullYear(),start.getMonth()+1,1);return new Date(nm.getFullYear(),nm.getMonth(),Math.min(day,dim(nm.getFullYear(),nm.getMonth())));
+}
+function period(start){const end=addDays(nextStart(start),-1);return{start,end,key:iso(start)};}
+function currentPeriod(){return period(periodStartFor(today()));}
+function periodsBetween(from,to){const out=[];let s=periodStartFor(from);let g=0;while(s<=to&&g++<400){out.push(period(s));s=nextStart(s);}return out;}
+
+/* ---------- money in a period ---------- */
+function dueItems(p){
+  const items=[];const months=[];let c=new Date(p.start.getFullYear(),p.start.getMonth(),1);
+  while(c<=p.end){months.push(new Date(c));c=new Date(c.getFullYear(),c.getMonth()+1,1);}
+  const add=(src,type)=>{for(const m of months){const d=new Date(m.getFullYear(),m.getMonth(),Math.min(src.dueDay||1,dim(m.getFullYear(),m.getMonth())));
+    if(d>=p.start&&d<=p.end){const key=(type==="debt"?"d:":"b:")+src.id+":"+ym(d);items.push({type,id:src.id,name:src.name,amount:type==="debt"?num(src.minPayment):num(src.amount),date:d,key,autopay:!!src.autopay,paid:!!S.paid[key]});}}};
+  S.bills.forEach(b=>add(b,"bill"));S.debts.filter(d=>num(d.balance)>0&&num(d.minPayment)>0).forEach(d=>add(d,"debt"));
+  return items.sort((a,b)=>a.date-b.date);
+}
+function summary(p){
+  const income=num(S.settings.payAmount)+num(S.incomeAdj[p.key]);
+  const items=dueItems(p);const bills=items.reduce((s,i)=>s+i.amount,0);const billsLeft=items.filter(i=>!i.paid).reduce((s,i)=>s+i.amount,0);
+  const savings=S.goals.filter(g=>!num(g.target)||num(g.saved)<num(g.target)||S.saved[p.key+":"+g.id]).reduce((s,g)=>s+num(g.perPaycheck),0);
+  const extraDebt=S.debts.some(d=>num(d.balance)>0)?num(S.settings.extraDebt):0;
+  const exps=S.expenses.filter(e=>{const d=parse(e.date);return d>=p.start&&d<=p.end;});
+  const spent=exps.reduce((s,e)=>s+num(e.amount),0);
+  const left=income-bills-savings-extraDebt-spent;
+  const td=today();const daysLeft=td>=p.start&&td<=p.end?dayDiff(td,p.end)+1:(td<p.start?dayDiff(p.start,p.end)+1:0);
+  return{income,items,bills,billsLeft,savings,extraDebt,spent,exps,left,daysLeft,perDay:daysLeft>0?left/daysLeft:left};
+}
+
+/* ---------- debt payoff ---------- */
+function payoff(){
+  const debts=S.debts.filter(d=>num(d.balance)>0).map(d=>({id:d.id,name:d.name,bal:num(d.balance),apr:num(d.apr),min:Math.max(num(d.minPayment),0),done:null}));
+  if(!debts.length)return null;
+  const budget=debts.reduce((s,d)=>s+d.min,0)+num(S.settings.extraDebt)*PER_MONTH[S.settings.freq];
+  let month=0,interest=0;
+  while(debts.some(d=>d.bal>0.005)&&month<600){
+    month++;const before=debts.reduce((s,d)=>s+d.bal,0);
+    debts.forEach(d=>{if(d.bal>0){const i=d.bal*d.apr/1200;d.bal+=i;interest+=i;}});
+    let pool=budget;
+    debts.forEach(d=>{if(d.bal>0){const p=Math.min(d.min,d.bal);d.bal-=p;pool-=p;}});
+    const order=debts.filter(d=>d.bal>0).sort(S.settings.strategy==="avalanche"?(a,b)=>b.apr-a.apr||a.bal-b.bal:(a,b)=>a.bal-b.bal||b.apr-a.apr);
+    for(const d of order){if(pool<=0)break;const p=Math.min(pool,d.bal);d.bal-=p;pool-=p;}
+    debts.forEach(d=>{if(d.bal<=0.005&&d.done===null){d.bal=0;d.done=month;}});
+    if(debts.reduce((s,d)=>s+d.bal,0)>=before-0.005)break;
+  }
+  const stuck=debts.some(d=>d.done===null);
+  return{budget,months:stuck?null:month,interest,order:debts.slice().sort((a,b)=>(a.done??9999)-(b.done??9999))};
+}
+function monthLabel(n){const d=new Date(today().getFullYear(),today().getMonth()+n,1);return d.toLocaleDateString(loc(),{month:"short",year:"numeric"});}
+
+/* ---------- ui helpers ---------- */
+let tab=(location.hash||"").slice(1);if(!TABS.includes(tab)&&!SUB.includes(tab))tab="today";
+let selCat=null,yearSel=null,sheetCtx=null,showAllExp=false,showAllBills=false;
+const $=s=>document.querySelector(s);
+function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("show"),2000);}
+function applyTheme(){document.documentElement.setAttribute("data-palette",PALS[S.settings.palette]?S.settings.palette:"sage");const th=S.settings.theme;if(th==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",th);}
+function renderTabs(){
+  $("#tabs").innerHTML=TABS.map(k=>{const on=k===tab||(k==="more"&&SUB.includes(tab));return `<button data-tab="${k}" ${on?'aria-current="page"':""}><span class="ni" aria-hidden="true">${ICON[k]}</span><span>${T("nav."+k)}</span></button>`;}).join("");
+}
+function go(x){tab=x;showAllExp=false;showAllBills=false;try{history.replaceState(null,"","#"+x);}catch(e){}render();window.scrollTo(0,0);}
+function stateClass(left,income){if(left<0)return"over";if(income>0&&left<income*0.1)return"tight";return"ok";}
+const back=()=>`<button class="link" data-tab="more">${T("b.back")}</button>`;
+const demoBanner=()=>demo?`<div class="demo-banner">${T("tr.demo")}</div>`:"";
+
+/* ---------- views ---------- */
+function vToday(){
+  const p=currentPeriod(),s=summary(p);const st=stateClass(s.left,s.income);const nx=nextStart(p.start);
+  const usedPct=s.income>0?Math.min(100,Math.max(0,(s.income-Math.max(s.left,0))/s.income*100)):0;
+  const msg=st==="over"?t("t.over",fmtD(nx)):st==="tight"?t("t.tight"):t("t.ok");
+  const unpaid=s.items.filter(i=>!i.paid);const shownBills=showAllBills?unpaid:unpaid.slice(0,3);
+  const exps=S.expenses.slice().sort((a,b)=>b.date.localeCompare(a.date));const rec=showAllExp?exps.slice(0,40):exps.slice(0,3);
+  return `${demoBanner()}
+  <section class="hero ${st}" aria-label="${T("t.safe")}">
+    <span class="label">${T("t.safe")}</span>
+    <div class="big">${money(Math.max(s.perDay,0))}</div>
+    <div class="msg">${esc(msg)}</div>
+    <div class="small muted">${T("t.line",money(s.left),s.daysLeft)}</div>
+    <div class="bar ${st==="over"?"danger":st==="tight"?"warn":"safe"}" aria-hidden="true"><i style="width:${usedPct}%"></i></div>
+  </section>
+  <button class="btn primary big" id="addSpend" data-open="spend">${T("t.add")}</button>
+  <section class="card" id="billsCard">
+    <h2>${T("t.bills")}</h2>
+    ${shownBills.length?`<div class="list">${shownBills.map(itemRow).join("")}</div>${unpaid.length>3?`<button class="link" data-act="billsAll">${showAllBills?T("t.less"):T("t.more",unpaid.length-3)}</button>`:""}`:`<p class="muted">${T("t.noBills")}</p>`}
+  </section>
+  <section class="card">
+    <h2>${T("t.recent")}</h2>
+    ${rec.length?`<div class="list">${rec.map(e=>`<button class="tap" data-open="exp" data-id="${e.id}"><span class="emo" aria-hidden="true">${catE(e.category)}</span><span class="grow"><span class="title">${esc(e.note||catLabel(e.category))}</span><span class="small muted">${fmtD(parse(e.date))}</span></span><span class="amt">−${money(num(e.amount))}</span></button>`).join("")}</div>${exps.length>3?`<button class="link" data-act="expAll">${showAllExp?T("t.less"):T("t.all")}</button>`:""}`:`<p class="muted">${T("t.noSpend")}</p>`}
+  </section>
+  ${bucketBlock(s)}`;
+}
+function itemRow(i){return `<label class="item ${i.paid?"done":""}"><input type="checkbox" data-paid="${esc(i.key)}" ${i.paid?"checked":""}><span class="grow"><span class="title">${esc(i.name)}</span><span class="small muted">${fmtDW(i.date)}${i.autopay?" · "+T("pill.autopay"):""}</span></span><span class="amt">${money(i.amount)}</span></label>`;}
+function bucketBlock(s){
+  const b=Object.entries(S.buckets).filter(([,v])=>num(v)>0);if(!b.length)return"";
+  return `<details class="card"><summary>${T("t.limits")}</summary>`+b.map(([c,v])=>{const used=s.exps.filter(e=>e.category===c).reduce((x,e)=>x+num(e.amount),0);const pct=Math.min(100,used/num(v)*100);const cls=used>num(v)?"danger":pct>80?"warn":"safe";
+    return `<div><div class="spread small"><span>${catE(c)} ${esc(catLabel(c))}</span><span>${money0(used)} / ${money0(num(v))}</span></div><div class="bar ${cls}"><i style="width:${pct}%"></i></div></div>`;}).join("")+`</details>`;
+}
+function vBills(){
+  const total=S.bills.reduce((s,b)=>s+num(b.amount),0);
+  return `${demoBanner()}<div class="head"><h1>${T("bi.title")}</h1><span class="muted small">${T("bi.total")} <b>${money(total)}</b></span></div>
+  <button class="btn primary big" data-open="bill">${T("bi.addBig")}</button>
+  <section class="card">${S.bills.length?`<div class="list">${S.bills.slice().sort((a,b)=>a.dueDay-b.dueDay).map(b=>`<button class="tap" data-open="bill" data-id="${b.id}"><span class="emo" aria-hidden="true">${BC_E[b.category]||"📄"}</span><span class="grow"><span class="title">${esc(b.name)}</span><span class="small muted">${T("bi.day",b.dueDay)}${b.autopay?" · "+T("pill.autopay"):""}</span></span><span class="amt">${money(num(b.amount))}</span></button>`).join("")}</div>`:`<div class="empty">${T("bi.empty")}</div>`}</section>
+  ${S.bills.length?`<p class="small muted center">${T("tap")}</p>`:""}`;
+}
+function vSavings(){
+  const cur=currentPeriod();
+  return `${demoBanner()}<div class="head"><h1>${T("s.title")}</h1></div>
+  <button class="btn primary big" data-open="goal">${T("s.addBig")}</button>
+  <div class="stack" id="goalsGrid">${S.goals.length?S.goals.map(g=>{const tg=num(g.target);const pct=tg?Math.min(100,num(g.saved)/tg*100):0;const done=!!S.saved[cur.key+":"+g.id];
+    const left=tg-num(g.saved);const n=num(g.perPaycheck)>0&&left>0?Math.ceil(left/num(g.perPaycheck)):0;const reached=tg&&pct>=100;
+    return `<section class="card"><button class="tap plain" data-open="goal" data-id="${g.id}"><span class="grow"><span class="title" style="font-size:1.1rem">${esc(g.name)}</span><span class="small muted">${reached?T("s.reached"):n?T("s.toGo",n):T("s.perPay",money0(num(g.perPaycheck)))}</span></span><span class="muted" aria-hidden="true">✎</span></button>
+      <div class="spread"><b style="font-size:1.3rem">${money0(num(g.saved))}</b><span class="muted small">${tg?T("s.of",money0(tg)):""}</span></div>
+      ${tg?`<div class="bar safe"><i style="width:${pct}%"></i></div>`:""}
+      ${reached&&!done?"":`<button class="btn ${done?"":"soft"} wide" data-save-goal="${g.id}">${done?T("s.did"):T("s.do",money0(num(g.perPaycheck)))}</button>`}</section>`;}).join(""):`<section class="card"><div class="empty">${T("s.empty")}</div></section>`}</div>`;
+}
+function vMore(){
+  return `<h1>${T("nav.more")}</h1><section class="card"><div class="list">${SUB.map(k=>`<button class="tap" data-tab="${k}"><span class="emo" aria-hidden="true">${MICON[k]}</span><span class="grow"><span class="title">${T(k==="help"?"help":"nav."+k)}</span><span class="small muted">${T("m."+k)}</span></span><span class="muted" aria-hidden="true">›</span></button>`).join("")}</div></section>`;
+}
+function vPaychecks(){
+  const cur=currentPeriod();const list=[];let s=cur.start;for(let i=0;i<4;i++){list.push(period(s));s=nextStart(s);}
+  return `${back()}<h1>${T("p.title")}</h1>
+  ${list.map(p=>{const m=summary(p);const isCur=p.key===cur.key;const st=stateClass(m.left,m.income);
+    return `<section class="card period ${isCur?"current":""}">
+      <div class="spread"><div><h2>${fmtD(p.start)} – ${fmtD(p.end)}</h2>${isCur?`<span class="small muted">${T("p.current")}</span>`:""}</div><span class="pill ${st==="over"?"danger":st==="tight"?"warn":"safe"}">${T("p.left",money0(m.left))}</span></div>
+      <div class="kv"><span>${T("p.pay")}</span><b>${money(m.income)}</b></div>
+      <div class="kv"><span>${T("y.bills")}</span><b>−${money(m.bills)}</b></div>
+      ${m.savings?`<div class="kv"><span>${T("p.sav")}</span><b>−${money(m.savings)}</b></div>`:""}
+      ${m.extraDebt?`<div class="kv"><span>${T("p.xdebt")}</span><b>−${money(m.extraDebt)}</b></div>`:""}
+      ${m.spent?`<div class="kv"><span>${T("p.spent")}</span><b>−${money(m.spent)}</b></div>`:""}
+      <div class="kv total"><span>${T("p.lts")}</span><b>${money(m.left)}</b></div>
+      <details ${num(S.incomeAdj[p.key])?"open":""}><summary class="small muted">${T("p.extraQ")}</summary><label class="field" style="margin-top:8px"><span>${T("p.extraHint")}</span><input inputmode="decimal" data-adj="${p.key}" value="${num(S.incomeAdj[p.key])||""}" placeholder="0"></label></details>
+    </section>`;}).join("")}`;
+}
+function vDebts(){
+  const r=payoff();const total=S.debts.reduce((s,d)=>s+num(d.balance),0);
+  return `${back()}<div class="head"><h1>${T("d.title")}</h1><span class="muted small">${T("d.total")} <b>${money(total)}</b></span></div>
+  ${r?(r.months===null?`<section class="hero over"><b class="msg">${T("d.stuck")}</b><span class="small">${T("d.stuckSub")}</span></section>`:
+   `<section class="hero ok"><span class="label">${T("d.free")}</span><div class="big" style="font-size:2.4rem">${T("d.months",r.months)}</div><span class="small">${T("d.interest",monthLabel(r.months),money0(r.interest))}</span></section>`):""}
+  <button class="btn primary big" data-open="debt">${T("d.addBig")}</button>
+  <section class="card">${S.debts.length?`<div class="list">${S.debts.slice().sort((a,b)=>{const ia=r?r.order.findIndex(x=>x.id===a.id):0,ib=r?r.order.findIndex(x=>x.id===b.id):0;return (ia<0?99:ia)-(ib<0?99:ib);}).map(d=>{const o=r&&r.order.findIndex(x=>x.id===d.id);return `<button class="tap" data-open="debt" data-id="${d.id}"><span class="emo">${o!=null&&o>=0?o+1:"✓"}</span><span class="grow"><span class="title">${esc(d.name)}</span><span class="small muted">${num(d.apr)}% · ${T("d.min")} ${money0(num(d.minPayment))}</span></span><span class="amt">${money0(num(d.balance))}</span></button>`;}).join("")}</div>`:`<div class="empty">${T("d.emptyPlan")}</div>`}</section>
+  ${S.debts.length?`<details class="card"><summary>${T("d.adjust")}</summary>
+    <div class="chips"><button class="chip" data-strategy="snowball" aria-pressed="${S.settings.strategy==="snowball"}">${T("d.snow")}</button><button class="chip" data-strategy="avalanche" aria-pressed="${S.settings.strategy==="avalanche"}">${T("d.aval")}</button></div>
+    <label class="field"><span>${T("d.extra")}</span><input id="extraDebt" inputmode="decimal" value="${num(S.settings.extraDebt)||""}" placeholder="0"></label>
+    <p class="small muted">${T("d.note")}</p></details>`:""}`;
+}
+function vYear(){
+  const td=today();if(!yearSel)yearSel=td.getMonth()===11?td.getFullYear()+1:td.getFullYear();
+  const months=[];for(let m=0;m<12;m++){const a=new Date(yearSel,m,1),b=new Date(yearSel,m,dim(yearSel,m));
+    const ps=periodsBetween(a,b).filter(p=>p.start>=a&&p.start<=b);
+    const income=ps.reduce((s,p)=>s+num(S.settings.payAmount)+num(S.incomeAdj[p.key]),0);
+    const bills=dueItems({start:a,end:b}).reduce((s,i)=>s+i.amount,0);
+    const spent=S.expenses.filter(e=>{const d=parse(e.date);return d>=a&&d<=b;}).reduce((s,e)=>s+num(e.amount),0);
+    const saved=ps.length*S.goals.reduce((s,g)=>s+num(g.perPaycheck),0);
+    months.push({label:a.toLocaleDateString(loc(),{month:"short"}),pays:ps.length,income,bills,spent,saved,net:income-bills-spent-saved});}
+  const max=Math.max(1,...months.map(m=>Math.max(m.income,m.bills+m.spent+m.saved)));
+  const W=600,H=220,pad=36,bw=(W-pad-6)/12;const y=v=>H-24-(v/max)*(H-44);
+  const short=v=>v>=1000?(Math.round(v/100)/10)+"k":String(Math.round(v));
+  const bars=months.map((m,i)=>{const x=pad+i*bw+bw*0.12,w=bw*0.36;const out=m.bills+m.spent+m.saved;
+    return `<rect x="${x}" y="${y(m.income)}" width="${w}" height="${H-24-y(m.income)}" rx="3" fill="var(--accent)"><title>${esc(m.label)}: ${money0(m.income)}</title></rect>
+    <rect x="${x+w+2}" y="${y(out)}" width="${w}" height="${H-24-y(out)}" rx="3" fill="var(--warn)"><title>${esc(m.label)}: ${money0(out)}</title></rect>
+    <text x="${x+w}" y="${H-6}" text-anchor="middle">${esc(m.label)}</text>${m.pays===3?`<text x="${x+w}" y="${y(m.income)-5}" text-anchor="middle" style="fill:var(--safe);font-weight:700">3×</text>`:""}`;}).join("");
+  const tot=months.reduce((a,m)=>({income:a.income+m.income,bills:a.bills+m.bills,spent:a.spent+m.spent,saved:a.saved+m.saved,net:a.net+m.net}),{income:0,bills:0,spent:0,saved:0,net:0});
+  const three=months.filter(m=>m.pays===3).map(m=>m.label);
+  return `${back()}<div class="head"><h1>${T("y.title",yearSel)}</h1><div class="row"><button class="btn" data-year="-1" aria-label="${T("y.prev")}">←</button><button class="btn" data-year="1" aria-label="${T("y.next")}">→</button></div></div>
+  ${three.length?`<section class="card" style="background:var(--safe-soft);border-color:transparent"><b>${T("y.bonus",three.join(", "))}</b><span class="small">${T("y.bonusSub")}</span></section>`:""}
+  <section class="card" id="yearChart"><div class="legend"><span><i style="background:var(--accent)"></i>${T("y.income")}</span><span><i style="background:var(--warn)"></i>${T("y.out")}</span></div>
+    <div class="tablebox"><svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:480px" role="img" aria-label="${T("y.chart")}">
+      ${[0,max/2,max].map(v=>`<line x1="${pad}" x2="${W-4}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pad-4}" y="${y(v)+4}" text-anchor="end">${short(v)}</text>`).join("")}${bars}</svg></div></section>
+  <details class="card"><summary>${T("y.details")}</summary><div class="tablebox"><table><thead><tr><th>${T("y.month")}</th><th>${T("y.income")}</th><th>${T("y.bills")}</th><th>${T("y.spent")}</th><th>${T("y.sav")}</th><th>${T("y.net")}</th></tr></thead><tbody>
+  ${months.map(m=>`<tr><td>${esc(m.label)}${m.pays===3?" ·3×":""}</td><td>${money0(m.income)}</td><td>${money0(m.bills)}</td><td>${money0(m.spent)}</td><td>${money0(m.saved)}</td><td style="color:${m.net<0?"var(--danger)":"var(--safe)"}">${money0(m.net)}</td></tr>`).join("")}
+  <tr><th style="text-align:left">${T("y.total")}</th><th>${money0(tot.income)}</th><th>${money0(tot.bills)}</th><th>${money0(tot.spent)}</th><th>${money0(tot.saved)}</th><th>${money0(tot.net)}</th></tr>
+  </tbody></table></div><p class="small muted">${T("y.note")}</p></details>`;
+}
+function vSettings(){
+  const st=S.settings;
+  return `${back()}<h1>${T("se.title")}</h1>
+  <section class="card"><h2>${T("se.palette")}</h2>${paletteSwatches()}</section>
+  <section class="card" id="payCard"><h2>${T("se.pay")}</h2>
+    <form id="setForm" class="stack" autocomplete="off">
+      <label class="field"><span>${T("se.take")}</span><input id="sPay" inputmode="decimal" value="${num(st.payAmount)||""}" placeholder="2000"></label>
+      <label class="field"><span>${T("se.freq")}</span><select id="sFreq">${FREQS.map(k=>`<option value="${k}" ${k===st.freq?"selected":""}>${T("fq."+k)}</option>`).join("")}</select></label>
+      <label class="field"><span>${T("se.anchor")}</span><input id="sAnchor" type="date" value="${st.anchor}"></label>
+      <label class="field"><span>${T("se.cur")}</span><select id="sCur">${currencyOptions(st.currency)}</select></label>
+      <div class="two"><label class="field"><span>${T("se.lang")}</span><select id="sLang">${langOptions(st.lang)}</select></label>
+      <label class="field"><span>${T("se.theme")}</span><select id="sTheme">${["auto","light","dark"].map(k=>`<option value="${k}" ${k===st.theme?"selected":""}>${T("th."+k)}</option>`).join("")}</select></label></div>
+      <button class="btn primary big" type="submit">${T("se.save")}</button>
+    </form></section>
+  <section class="card" id="backupCard"><h2>${T("se.backup")}</h2><p class="small muted">${T("se.backupSub")}</p>
+    <button class="btn primary wide" data-act="export">${T("se.dl")}</button><label class="btn wide">${T("se.restore")}<input type="file" id="importFile" accept="application/json,.json" hidden></label></section>
+  <details class="card"><summary>${T("se.limits")}</summary><p class="small muted">${T("se.limitsSub")}</p>
+    <form id="bucketForm" class="stack">${S.categories.map(c=>`<label class="spread"><span>${catE(c)} ${esc(catLabel(c))}</span><input data-bucket="${esc(c)}" inputmode="decimal" style="max-width:120px;text-align:right" value="${num(S.buckets[c])||""}" placeholder="—" aria-label="${esc(catLabel(c))}"></label>`).join("")}
+    <button class="btn primary wide" type="submit">${T("se.saveLimits")}</button></form></details>
+  <details class="card"><summary>${T("se.more")}</summary>
+    <button class="btn wide" data-act="tour">${T("se.tour")}</button><button class="btn wide" data-act="sample">${T("se.sample")}</button><button class="btn danger wide" data-act="reset">${T("se.erase")}</button>
+    <p class="small muted">${T("se.overSub")}</p></details>`;
+}
+function vHelp(){
+  const g=GUIDE[lang()]||GUIDE.en, fq=FAQ[lang()]||FAQ.en;
+  return `${back()}<h1>${T("h.title")}</h1>
+  <button class="btn primary big" data-act="tour">${T("h.replay")}</button>
+  <section class="card"><h2>${T("h.guide")}</h2><div>${g.map(s=>`<details class="topic"><summary>${esc(s[0])}</summary><p>${esc(s[1])}</p></details>`).join("")}</div></section>
+  <section class="card"><h2>${T("h.faq")}</h2><div>${fq.map(s=>`<details class="topic"><summary>${esc(s[0])}</summary><p>${esc(s[1])}</p></details>`).join("")}</div></section>`;
+}
+
+/* ---------- bottom sheets ---------- */
+function sheet(title,body){$("#modalRoot").innerHTML=`<div class="sheet-back"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="grab" aria-hidden="true"></div><h2>${esc(title)}</h2>${body}</div></div>`;}
+function closeSheet(){$("#modalRoot").innerHTML="";sheetCtx=null;}
+const actions=(id)=>`<button class="btn primary big" type="submit">${T("b.save")}</button>${id?`<button class="btn danger wide" type="button" data-del="1">${T("b.delete")}</button>`:""}<button class="btn ghost wide" type="button" data-close="1">${T("b.cancel")}</button>`;
+function focusFirst(sel){setTimeout(()=>{const a=$(sel);if(a)a.focus();},60);}
+function openSpend(){
+  if(!selCat||!S.categories.includes(selCat))selCat=S.categories[0];
+  const main=S.categories.filter(c=>MAIN_CATS.includes(c)||!CATS.includes(c)),extra=S.categories.filter(c=>CATS.includes(c)&&!MAIN_CATS.includes(c));
+  const cb=c=>`<button type="button" class="cat" data-cat="${esc(c)}" aria-pressed="${c===selCat}"><span class="e" aria-hidden="true">${catE(c)}</span>${esc(catLabel(c))}</button>`;
+  sheetCtx={type:"spend"};
+  sheet(t("sh.spend"),`<form id="spendForm" class="stack" autocomplete="off">
+    <input id="expAmt" class="amount-in" inputmode="decimal" placeholder="0" aria-label="${T("f.amount")}">
+    <div class="catgrid" role="group" aria-label="${T("t.cat")}">${main.map(cb).join("")}</div>
+    ${extra.length?`<details ${extra.includes(selCat)?"open":""}><summary class="small muted">${T("sh.morecats")}</summary><div class="catgrid" style="margin-top:8px">${extra.map(cb).join("")}</div></details>`:""}
+    <details><summary class="small muted">${T("sh.details")}</summary><div class="stack" style="margin-top:8px"><input id="expNote" placeholder="${T("f.notePh")}" aria-label="${T("f.note")}"><input id="expDate" type="date" value="${iso(today())}" aria-label="${T("f.date")}"></div></details>
+    ${actions()}</form>`);
+  focusFirst("#expAmt");
+}
+function openExp(id){const e=S.expenses.find(x=>x.id===id);if(!e)return;sheetCtx={type:"exp",id};
+  sheet(t("sh.exp"),`<div class="stack"><div class="center"><div style="font-size:2.2rem">${catE(e.category)}</div><div style="font-size:2rem;font-weight:800">${money(num(e.amount))}</div><div class="muted">${esc(e.note||catLabel(e.category))} · ${fmtDW(parse(e.date))}</div></div>
+  <button class="btn danger big" type="button" data-del="1">${T("b.delete")}</button><button class="btn ghost wide" type="button" data-close="1">${T("b.cancel")}</button></div>`);}
+function openBill(id){const b=id?S.bills.find(x=>x.id===id):null;sheetCtx={type:"bill",id:b?b.id:null};
+  sheet(b?t("bi.edit"):t("bi.add"),`<form id="billForm" class="stack" autocomplete="off">
+    <label class="field"><span>${T("bi.name")}</span><input id="bName" required placeholder="${T("bi.namePh")}" value="${b?esc(b.name):""}"></label>
+    <div class="two"><label class="field"><span>${T("f.amount")}</span><input id="bAmt" inputmode="decimal" required placeholder="0" value="${b?num(b.amount):""}"></label>
+    <label class="field"><span>${T("bi.due")}</span><input id="bDay" type="number" min="1" max="31" required placeholder="1" value="${b?b.dueDay:""}"></label></div>
+    <label class="field"><span>${T("bi.cat")}</span><select id="bCat">${BILLCATS.map(c=>`<option value="${c}" ${b&&b.category===c?"selected":""}>${BC_E[c]} ${T("bc."+c)}</option>`).join("")}</select></label>
+    <label class="row"><input type="checkbox" id="bAuto" ${b&&b.autopay?"checked":""}> ${T("bi.auto")}</label>
+    ${actions(b)}</form>`);
+  if(!b)focusFirst("#bName");}
+function openDebt(id){const d=id?S.debts.find(x=>x.id===id):null;sheetCtx={type:"debt",id:d?d.id:null};
+  sheet(d?t("d.edit"):t("d.add"),`<form id="debtForm" class="stack" autocomplete="off">
+    <label class="field"><span>${T("bi.name")}</span><input id="dName" required placeholder="${T("d.namePh")}" value="${d?esc(d.name):""}"></label>
+    <div class="two"><label class="field"><span>${T("d.bal")}</span><input id="dBal" inputmode="decimal" required placeholder="0" value="${d?num(d.balance):""}"></label>
+    <label class="field"><span>${T("d.apr")}</span><input id="dApr" inputmode="decimal" placeholder="24,9" value="${d?num(d.apr):""}"></label>
+    <label class="field"><span>${T("d.min")}</span><input id="dMin" inputmode="decimal" required placeholder="0" value="${d?num(d.minPayment):""}"></label>
+    <label class="field"><span>${T("d.due")}</span><input id="dDay" type="number" min="1" max="31" placeholder="15" value="${d?d.dueDay||"":""}"></label></div>
+    ${actions(d)}</form>`);
+  if(!d)focusFirst("#dName");}
+function openGoal(id){const g=id?S.goals.find(x=>x.id===id):null;sheetCtx={type:"goal",id:g?g.id:null};
+  sheet(g?t("s.edit"):t("s.new"),`<form id="goalForm" class="stack" autocomplete="off">
+    <label class="field"><span>${T("s.goal")}</span><input id="gName" required placeholder="${T("s.goalPh")}" value="${g?esc(g.name):""}"></label>
+    <label class="field"><span>${T("s.per")}</span><input id="gPer" inputmode="decimal" required placeholder="50" value="${g?num(g.perPaycheck):""}"></label>
+    <div class="two"><label class="field"><span>${T("s.target")}</span><input id="gTarget" inputmode="decimal" placeholder="1000" value="${g&&num(g.target)?num(g.target):""}"></label>
+    <label class="field"><span>${T("s.already")}</span><input id="gSaved" inputmode="decimal" placeholder="0" value="${g&&num(g.saved)?num(g.saved):""}"></label></div>
+    ${actions(g)}</form>`);
+  if(!g)focusFirst("#gName");}
+
+/* ---------- setup wizard ---------- */
+let wz=0;
+function renderWizard(){
+  const st=S.settings;
+  const body=wz===0?`<h2>${T("w.title")}</h2><p class="muted">${T("w.body")}</p>
+    <label class="field"><span>${T("se.take")}</span><input id="oPay" inputmode="decimal" value="${num(st.payAmount)||""}" placeholder="2000"></label>
+    <label class="field"><span>${T("se.freq")}</span><select id="oFreq">${FREQS.map(k=>`<option value="${k}" ${k===st.freq?"selected":""}>${T("fq."+k)}</option>`).join("")}</select></label>
+    <label class="field"><span>${T("se.anchor")}</span><input id="oAnchor" type="date" value="${st.anchor}"></label>
+    <label class="field"><span>${T("se.cur")}</span><select id="oCur">${currencyOptions(st.currency)}</select></label>
+    <button class="btn primary big" data-wz="next">${T("w.next")}</button>`
+   :`<h2>${T("w.doneTitle")}</h2><p>${T("w.doneBody")}</p>
+    <button class="btn primary big" data-wz="bills">${T("w.bills")}</button><button class="btn wide" data-wz="today">${T("w.today")}</button>`;
+  $("#modalRoot").innerHTML=`<div class="overlay"><div class="modal" role="dialog" aria-modal="true" aria-label="${T("w.title")}"><div class="steps"><i class="on"></i><i class="${wz>0?"on":""}"></i></div>${body}</div></div>`;
+  if(wz===0)focusFirst("#oPay");
+}
+function closeWizard(){S.onboarded=true;save();$("#modalRoot").innerHTML="";render();}
+
+/* ---------- sample data ---------- */
+function buildSample(base){
+  const td=today();const d=n=>iso(addDays(td,n));
+  const anchor=addDays(td,-((td.getDay()+2)%7)-7);
+  const X=blank();Object.assign(X.settings,{lang:base.lang,currency:base.currency,theme:base.theme,palette:base.palette,payAmount:2150,freq:"biweekly",anchor:iso(anchor),extraDebt:50,strategy:"snowball"});
+  const prev=S;S=X;
+  X.bills=[["sm.rent",1200,1,"housing",false],["sm.electric",95,12,"utilities",true],["sm.phone",65,18,"phone",true],["sm.internet",60,22,"phone",true],["sm.carIns",140,5,"insurance",true],["Netflix",15.49,9,"subs",true],["Spotify",11.99,26,"subs",true],["sm.gym",30,3,"subs",true]].map(([n,amount,dueDay,category,autopay])=>({id:uid(),name:n.startsWith("sm.")?t(n):n,amount,dueDay,category,autopay}));
+  X.debts=[{id:uid(),name:t("sm.visa"),balance:2400,apr:24.9,minPayment:75,dueDay:15},{id:uid(),name:t("sm.car"),balance:8600,apr:6.5,minPayment:285,dueDay:20},{id:uid(),name:t("sm.store"),balance:560,apr:29.9,minPayment:35,dueDay:8}];
+  X.goals=[{id:uid(),name:t("sm.emergency"),target:1000,saved:340,perPaycheck:50},{id:uid(),name:t("sm.xmas"),target:400,saved:220,perPaycheck:40},{id:uid(),name:t("sm.trip"),target:1500,saved:150,perPaycheck:30}];
+  X.buckets={groceries:250,gas:90,eating:60,fun:50};
+  X.expenses=[[0,"groceries",64.20,"Aldi"],[-1,"gas",42.10,"Shell"],[-1,"eating",18.75,t("sm.tacos")],[-2,"fun",24,t("sm.movie")],[-3,"groceries",38.40,"Walmart"],[-4,"household",22.99,t("sm.cleaning")],[-6,"personal",12.5,t("sm.haircut")]].map(([n,category,amount,note])=>({id:uid(),date:d(n),category,amount,note}));
+  dueItems(currentPeriod()).forEach(i=>{if(i.date<td)X.paid[i.key]=true;});
+  X.onboarded=true;X.tourSeen=true;S=prev;return X;
+}
+
+/* ---------- guided tour (short) ---------- */
+let tour=null;
+function startTour(){
+  if(tour)return;$("#modalRoot").innerHTML="";
+  tour={i:0,real:S,tab:tab};S=buildSample(S.settings);demo=true;document.body.classList.add("touring");showStep();
+}
+function clearFocus(){document.querySelectorAll(".tour-focus").forEach(e=>e.classList.remove("tour-focus"));}
+function showStep(){
+  const st=STEPS[tour.i];const q=(QUICK[lang()]||QUICK.en)[tour.i];
+  if(st.tab)tab=st.tab;
+  render();clearFocus();
+  const target=st.sel?document.querySelector(st.sel):null;let pos="center";
+  if(target){
+    target.classList.add("tour-focus");
+    if(st.sel!=="#tabs")target.scrollIntoView({block:"center",behavior:"auto"});else window.scrollTo(0,0);
+    const r=target.getBoundingClientRect();pos=r.top<window.innerHeight*0.4?"bottom":"top";
+  }else window.scrollTo(0,0);
+  const n=STEPS.length;const realOn=tour.real.onboarded;
+  const extra=st.lang?`<div class="stack"><label class="field"><span>${T("se.lang")}</span><select id="tLang">${langOptions(S.settings.lang)}</select></label>
+      <label class="field"><span>${T("se.cur")}</span><select id="tCur">${currencyOptions(S.settings.currency)}</select></label><div class="field"><span>${T("se.palette")}</span>${paletteSwatches()}</div></div>`:"";
+  const buttons=st.end?(realOn?`<button class="btn primary big" data-tour="end">${T("tr.backData")}</button>`:`<button class="btn primary big" data-tour="own">${T("tr.own")}</button><button class="btn ghost wide" data-tour="keep">${T("tr.keep")}</button>`)
+    :`<div class="row"><button class="btn primary" data-tour="next" style="flex:1;padding:14px">${T("tr.next")}</button>${tour.i>0?`<button class="btn" data-tour="back">${T("tr.back")}</button>`:""}</div><button class="link" data-tour="${realOn?"end":"own"}" style="align-self:center;color:var(--muted)">${T("tr.skip")}</button>`;
+  $("#tourRoot").innerHTML=`${target?"":'<div class="tour-dim"></div>'}<div class="tour-card ${pos}" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+    <div class="dots" aria-label="${T("tr.of",tour.i+1,n)}">${STEPS.map((_,k)=>`<i class="${k<=tour.i?"on":""}"></i>`).join("")}</div>
+    <h2 id="tourTitle">${esc(q[0])}</h2><p>${esc(q[1])}</p>${extra}${buttons}</div>`;
+  const nb=$('#tourRoot [data-tour="next"]')||$('#tourRoot [data-tour="own"]')||$('#tourRoot [data-tour="end"]');if(nb)nb.focus({preventScroll:true});
+}
+function endTour(mode){
+  clearFocus();$("#tourRoot").innerHTML="";document.body.classList.remove("touring");
+  const lang0=S.settings.lang,cur0=S.settings.currency,pal0=S.settings.palette;
+  S=tour.real;demo=false;S.settings.lang=lang0;S.settings.palette=pal0;
+  if(!S.onboarded)S.settings.currency=cur0;
+  S.tourSeen=true;const backTab=tour.tab;tour=null;
+  if(mode==="keep"){S=buildSample(S.settings);save();tab="today";render();toast(t("se.sampleLoaded"));return;}
+  save();
+  if(!S.onboarded){tab="today";render();wz=0;renderWizard();return;}
+  tab=backTab;render();window.scrollTo(0,0);
+}
+
+/* ---------- render ---------- */
+function render(){
+  document.documentElement.lang=lang();applyTheme();renderTabs();
+  const v={today:vToday,bills:vBills,savings:vSavings,more:vMore,paychecks:vPaychecks,debts:vDebts,year:vYear,settings:vSettings,help:vHelp}[tab]||vToday;
+  $("#view").innerHTML=v();
+}
+
+/* ---------- events ---------- */
+function armed(el,label){if(el.dataset.armed)return false;const orig=el.textContent;el.dataset.armed="1";el.textContent=label;setTimeout(()=>{if(el.isConnected){delete el.dataset.armed;el.textContent=orig;}},4000);return true;}
+document.addEventListener("click",ev=>{
+  if(ev.target.classList&&ev.target.classList.contains("sheet-back")){closeSheet();return;}
+  const el=ev.target.closest("button");if(!el)return;const ds=el.dataset;
+  if(ds.tour){
+    if(ds.tour==="next"){tour.i=Math.min(STEPS.length-1,tour.i+1);showStep();}
+    else if(ds.tour==="back"){tour.i=Math.max(0,tour.i-1);showStep();}
+    else endTour(ds.tour);
+    return;}
+  if(ds.palette){S.settings.palette=ds.palette;if(tour){tour.real.settings.palette=ds.palette;showStep();}else{save();render();}const b=document.querySelector('.swatch[data-palette="'+ds.palette+'"]');if(b)b.focus({preventScroll:true});return;}
+  if(tour)return;
+  if(ds.close){closeSheet();return;}
+  if(ds.tab){closeSheet();go(ds.tab);return;}
+  if(ds.open){const f={spend:openSpend,exp:openExp,bill:openBill,debt:openDebt,goal:openGoal}[ds.open];if(f)f(ds.id);return;}
+  if(ds.cat){selCat=ds.cat;document.querySelectorAll(".cat[data-cat]").forEach(c=>c.setAttribute("aria-pressed",c.dataset.cat===selCat));return;}
+  if(ds.del&&sheetCtx){if(armed(el,t("sh.del2")))return;const c=sheetCtx;
+    const m={exp:["expenses","toast.removed"],bill:["bills","bi.deleted"],debt:["debts","d.deleted"],goal:["goals","s.deleted"]}[c.type];
+    if(m){S[m[0]]=S[m[0]].filter(x=>x.id!==c.id);save();closeSheet();render();toast(t(m[1]));}return;}
+  if(ds.saveGoal){const g=S.goals.find(x=>x.id===ds.saveGoal);if(!g)return;const k=currentPeriod().key+":"+g.id;
+    if(S.saved[k]){delete S.saved[k];g.saved=Math.max(0,num(g.saved)-num(g.perPaycheck));toast(t("s.undone"));}
+    else{S.saved[k]=true;g.saved=num(g.saved)+num(g.perPaycheck);toast(num(g.target)&&g.saved>=num(g.target)?t("s.reachedToast"):t("s.savedToast",money0(num(g.perPaycheck))));}
+    save();render();return;}
+  if(ds.strategy){S.settings.strategy=ds.strategy;save();render();const d=document.querySelector("#view details.card");if(d)d.open=true;return;}
+  if(ds.year){yearSel+=Number(ds.year);render();return;}
+  if(ds.act==="expAll"){showAllExp=!showAllExp;render();return;}
+  if(ds.act==="billsAll"){showAllBills=!showAllBills;render();return;}
+  if(ds.act==="tour"){startTour();return;}
+  if(ds.act==="export"){const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="paycheck-planner-backup-"+iso(today())+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);toast(t("se.dlDone"));return;}
+  if(ds.act==="sample"){if(armed(el,t("se.confReplace")))return;S=buildSample(S.settings);save();render();toast(t("se.sampleLoaded"));return;}
+  if(ds.act==="reset"){if(armed(el,t("se.confErase")))return;const l=S.settings.lang,c=S.settings.currency,pl=S.settings.palette;S=blank();S.settings.lang=l;S.settings.currency=c;S.settings.palette=pl;save();tab="today";render();startTour();return;}
+  if(ds.wz){
+    if(ds.wz==="next"){S.settings.payAmount=num($("#oPay").value);S.settings.freq=$("#oFreq").value;S.settings.anchor=$("#oAnchor").value||iso(today());S.settings.currency=$("#oCur").value;save();wz=1;renderWizard();render();return;}
+    if(ds.wz==="bills"){tab="bills";closeWizard();return;}
+    if(ds.wz==="today"){tab="today";closeWizard();return;}
+  }
+});
+document.addEventListener("change",ev=>{
+  const el=ev.target;
+  if(el.id==="tLang"||el.id==="tCur"){
+    if(el.id==="tLang"){S.settings.lang=el.value;tour.real.settings.lang=el.value;}
+    else{S.settings.currency=el.value;if(!tour.real.onboarded)tour.real.settings.currency=el.value;}
+    S=buildSample(S.settings);showStep();const f=$("#"+el.id);if(f)f.focus();return;}
+  if(tour){if(el.closest&&el.closest("#view"))render();return;}
+  if(el.dataset.paid){const k=el.dataset.paid;if(el.checked){S.paid[k]=true;toast(t("toast.paid"));}else delete S.paid[k];save();setTimeout(render,250);return;}
+  if(el.dataset.adj){const v=num(el.value);if(v)S.incomeAdj[el.dataset.adj]=v;else delete S.incomeAdj[el.dataset.adj];save();render();return;}
+  if(el.id==="extraDebt"){S.settings.extraDebt=num(el.value);save();render();const d=document.querySelector("#view details.card");if(d)d.open=true;return;}
+  if(el.id==="sLang"){S.settings.lang=el.value;save();render();return;}
+  if(el.id==="importFile"&&el.files[0]){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||!d.settings||!Array.isArray(d.bills))throw 0;S=hydrate(d);S.onboarded=true;S.tourSeen=true;save();render();toast(t("se.restored"));}catch(e){toast(t("se.bad"));}};r.readAsText(el.files[0]);}
+});
+document.addEventListener("submit",ev=>{
+  ev.preventDefault();const f=ev.target;if(tour)return;const c=sheetCtx||{};
+  const upsert=(arr,obj,msgEdit,msgAdd)=>{if(c.id){Object.assign(S[arr].find(x=>x.id===c.id),obj);toast(t(msgEdit));}else{S[arr].push(Object.assign({id:uid()},obj));toast(t(msgAdd));}save();closeSheet();render();};
+  if(f.id==="spendForm"){const amt=num($("#expAmt").value);if(amt<=0){toast(t("toast.amount"));$("#expAmt").focus();return;}
+    S.expenses.push({id:uid(),date:($("#expDate")&&$("#expDate").value)||iso(today()),amount:amt,category:selCat,note:($("#expNote")&&$("#expNote").value.trim())||""});save();closeSheet();tab="today";render();toast(t("toast.logged",money(amt)));return;}
+  if(f.id==="billForm"){upsert("bills",{name:$("#bName").value.trim(),amount:num($("#bAmt").value),dueDay:Math.min(31,Math.max(1,parseInt($("#bDay").value)||1)),category:$("#bCat").value,autopay:$("#bAuto").checked},"bi.saved","bi.added");return;}
+  if(f.id==="debtForm"){upsert("debts",{name:$("#dName").value.trim(),balance:num($("#dBal").value),apr:num($("#dApr").value),minPayment:num($("#dMin").value),dueDay:Math.min(31,Math.max(1,parseInt($("#dDay").value)||1))},"d.saved","d.added");return;}
+  if(f.id==="goalForm"){upsert("goals",{name:$("#gName").value.trim(),target:num($("#gTarget").value),saved:num($("#gSaved").value),perPaycheck:num($("#gPer").value)},"s.saved","s.added");return;}
+  if(f.id==="setForm"){S.settings.payAmount=num($("#sPay").value);S.settings.freq=$("#sFreq").value;S.settings.anchor=$("#sAnchor").value||S.settings.anchor;S.settings.currency=$("#sCur").value;S.settings.lang=$("#sLang").value;S.settings.theme=$("#sTheme").value;save();render();toast(t("se.saved"));return;}
+  if(f.id==="bucketForm"){document.querySelectorAll("[data-bucket]").forEach(i=>{const v=num(i.value);if(v>0)S.buckets[i.dataset.bucket]=v;else delete S.buckets[i.dataset.bucket];});save();render();toast(t("se.limitsSaved"));return;}
+});
+document.addEventListener("keydown",ev=>{
+  if(!tour){if(ev.key==="Escape"&&sheetCtx)closeSheet();return;}
+  const typing=/INPUT|SELECT/.test(document.activeElement.tagName);
+  if(ev.key==="Escape")endTour(tour.real.onboarded?"end":"own");
+  else if(ev.key==="ArrowRight"&&!typing&&tour.i<STEPS.length-1){tour.i++;showStep();}
+  else if(ev.key==="ArrowLeft"&&!typing&&tour.i>0){tour.i--;showStep();}
+});
+window.addEventListener("hashchange",()=>{const x=location.hash.slice(1);if(tour)return;if((TABS.includes(x)||SUB.includes(x))&&x!==tab){tab=x;render();}});
+window.addEventListener("storage",e=>{if(e.key===KEY&&!demo){S=load();render();}});
+window.addEventListener("resize",()=>{if(tour){clearTimeout(window.__rt);window.__rt=setTimeout(showStep,150);}});
+
+render();
+if(!S.tourSeen)startTour();
+else if(!S.onboarded){wz=0;renderWizard();}
+})();
+</script>
+<script>if("serviceWorker" in navigator&&location.protocol==="https:"){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}</script>
+</body>
+</html>
