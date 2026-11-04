@@ -776,6 +776,7 @@ function dim(y,m){return new Date(y,m+1,0).getDate();}
 function dayDiff(a,b){return Math.round((b-a)/864e5);}
 function ym(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
 const fmtD=d=>d.toLocaleDateString(loc(),{month:"short",day:"numeric"});
+const expWhen=(e,f)=>{const d=f(parse(e.date));if(!e.ts)return d;const t=new Date(e.ts);return iso(t)===e.date?d+", "+t.toLocaleTimeString(loc(),{hour:"2-digit",minute:"2-digit"}):d;};
 const fmtDW=d=>d.toLocaleDateString(loc(),{weekday:"short",month:"short",day:"numeric"});
 
 /* ---------- money ---------- */
@@ -883,7 +884,7 @@ function vToday(){
   const usedPct=s.income>0?Math.min(100,Math.max(0,(s.income-Math.max(s.left,0))/s.income*100)):0;
   const msg=st==="over"?t("t.over",fmtD(nx)):st==="tight"?t("t.tight"):t("t.ok");
   const unpaid=s.items.filter(i=>!i.paid);const shownBills=showAllBills?unpaid:unpaid.slice(0,3);
-  const exps=S.expenses.slice().sort((a,b)=>b.date.localeCompare(a.date));const rec=showAllExp?exps.slice(0,40):exps.slice(0,3);
+  const exps=S.expenses.map((e,i)=>[e,i]).sort((x,y)=>y[0].date.localeCompare(x[0].date)||(y[0].ts||0)-(x[0].ts||0)||y[1]-x[1]).map(x=>x[0]);const rec=showAllExp?exps.slice(0,40):exps.slice(0,3);
   return `${demoBanner()}
   <div class="col col-main">
   <section class="hero ${st}" aria-label="${T("t.safe")}">
@@ -904,7 +905,7 @@ function vToday(){
   </section>
   <section class="card">
     <h2>${T("t.recent")}</h2>
-    ${rec.length?`<div class="list">${rec.map(e=>`<button class="tap" data-open="exp" data-id="${e.id}"><span class="emo" aria-hidden="true">${catE(e.category)}</span><span class="grow"><span class="title">${esc(e.note||catLabel(e.category))}</span><span class="small muted">${fmtD(parse(e.date))}</span></span><span class="amt">−${money(num(e.amount))}</span></button>`).join("")}</div>${exps.length>3?`<button class="link" data-act="expAll">${showAllExp?T("t.less"):T("t.all")}</button>`:""}`:`<p class="muted">${T("t.noSpend")}</p>`}
+    ${rec.length?`<div class="list">${rec.map(e=>`<button class="tap" data-open="exp" data-id="${e.id}"><span class="emo" aria-hidden="true">${catE(e.category)}</span><span class="grow"><span class="title">${esc(e.note||catLabel(e.category))}</span><span class="small muted">${expWhen(e,fmtD)}</span></span><span class="amt">−${money(num(e.amount))}</span></button>`).join("")}</div>${exps.length>3?`<button class="link" data-act="expAll">${showAllExp?T("t.less"):T("t.all")}</button>`:""}`:`<p class="muted">${T("t.noSpend")}</p>`}
   </section>
   </div>`;
 }
@@ -912,7 +913,7 @@ function vToday(){
    High water: it floats with a yuzu on its head. Low water: it sits on the bottom in a warm towel. Never sad. */
 function capyArt(id,o){
   /* full-body capybara, side view: floats and naps; eyes open only while squeezed */
-  const w=o.wear||"";const headGear=w==="tenugui"||w==="hat";
+  const w=o.wear||"";const headGear=w==="tenugui"||w==="hat"||w==="duck";
   return `<svg viewBox="${o.vb||"0 -16 200 156"}" width="100%" height="100%" aria-hidden="true"><g class="cfloat">
   <ellipse class="paw p1" cx="74" cy="124" rx="10" ry="7" fill="#8c5a36"/><ellipse class="paw p2" cx="150" cy="126" rx="10" ry="7" fill="#8c5a36"/>
   <path d="M44 100C38 66 66 44 110 44C154 44 186 60 188 92C190 118 164 130 116 130C70 130 48 122 44 100Z" fill="#b07a4f"/>
@@ -929,7 +930,7 @@ function capyArt(id,o){
   <ellipse cx="60" cy="82" rx="8" ry="4.5" fill="#e8907a" opacity=".55"/>
   <path class="eye-c" d="M49 64q8 6 16 0" stroke="#4a2e1c" stroke-width="3.2" fill="none" stroke-linecap="round"/>
   <g class="eye-o"><circle cx="57" cy="63" r="5.2" fill="#4a2e1c"/><circle cx="58.8" cy="61.2" r="1.6" fill="#fff"/></g>
-  ${w==="glasses"?ACC_ART.glasses:""}${w==="flower"?ACC_ART.flower:""}${w==="hat"?ACC_ART.hat:""}
+  ${w==="glasses"?ACC_ART.glasses(id):""}${w==="flower"?ACC_ART.flower:""}${w==="hat"?ACC_ART.hat:""}${w==="duck"?`<g class="acc"><g transform="translate(75 5.5) scale(-.82 .82)">${DUCK_G}</g></g>`:""}
   ${o.yuzu&&!headGear?`<g class="capy-yuzu"><circle cx="54" cy="25" r="11" fill="#ffb21f"/><circle cx="50.5" cy="21.5" r="2.8" fill="#fff" opacity=".45"/><path d="M54 14.5c3-6 10-7 13-4.5-3 4.5-9 5.5-13 4.5z" fill="#3e9b57"/></g>`:""}
   <g class="zzz" fill="currentColor" font-family="var(--display)" font-weight="800"><text x="90" y="22" font-size="22">z</text><text x="106" y="5" font-size="17">z</text><text x="120" y="-8" font-size="13">z</text></g>
   </g></svg>`;
@@ -937,12 +938,12 @@ function capyArt(id,o){
 /* ---------- capybara wardrobe: small rewards for showing up, never taken away ---------- */
 const ACC_ART={
   tenugui:`<g class="acc"><path d="M22 58C26 38 44 27 62 27C82 27 97 37 102 52L99 62C93 47 79 38 62 38C46 38 33 47 28 63Z" fill="#3d7be0"/><circle cx="40" cy="42" r="2.2" fill="#fff"/><circle cx="56" cy="34" r="2.2" fill="#fff"/><circle cx="73" cy="34" r="2.2" fill="#fff"/><circle cx="88" cy="42" r="2.2" fill="#fff"/><path d="M99 52L114 44L111 58ZM99 57L113 66L101 67Z" fill="#2f63bd"/></g>`,
-  glasses:`<g class="acc"><path d="M68 60L84 46" stroke="#1f2547" stroke-width="2.6" stroke-linecap="round"/><path d="M45 57h21q5 0 4 5l-1.5 4q-2 6-9 6h-6q-7 0-9-6l-1.5-4q-1-5 4-5z" fill="#1f2547"/><path d="M48 60.5l6-.5" stroke="#8fe0e6" stroke-width="2.4" stroke-linecap="round"/><path d="M43 60l-6 .5" stroke="#1f2547" stroke-width="2.6" stroke-linecap="round"/><path d="M30 58.5h6q2 0 1.6 2.5l-.8 4q-.8 4-4 4h-1q-3 0-3.4-4l-.3-3.5q-.2-3 1.9-3z" fill="#1f2547"/></g>`,
+  glasses:(id)=>`<g class="acc"><defs><linearGradient id="gl-${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2f63"/><stop offset="1" stop-color="#4f63c9"/></linearGradient></defs><path d="M70 58.5C75 55 80 52 85 49.5" stroke="#1f2547" stroke-width="2.8" stroke-linecap="round" fill="none"/><path d="M44.5 61C43 64 41 65 37.5 65" stroke="#1f2547" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M44 56.5Q57 53 70.5 56.5Q72.5 57.5 72 61Q70.5 73 58.5 73Q46.5 73 44.3 62Q43.5 57.5 44 56.5Z" fill="url(#gl-${id})" stroke="#1f2547" stroke-width="2.4" stroke-linejoin="round"/><path d="M49 61.5L55 58.6" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity=".85"/><circle cx="51" cy="66" r="1.3" fill="#fff" opacity=".6"/></g>`,
   flower:`<g class="acc"><g fill="#ff6f91"><circle cx="93" cy="23" r="6.5"/><circle cx="101.5" cy="29" r="6.5"/><circle cx="98" cy="38.5" r="6.5"/><circle cx="88" cy="38.5" r="6.5"/><circle cx="84.5" cy="29" r="6.5"/></g><circle cx="93" cy="31" r="4" fill="#ffd23f"/></g>`,
   hat:`<g class="acc" transform="rotate(-9 60 32)"><ellipse cx="60" cy="34" rx="40" ry="8.5" fill="#e9b54f"/><path d="M38 33C38 12 82 12 82 33Z" fill="#f6d27e"/><path d="M38.6 27.5H81.4L82 33H38Z" fill="#e2574c"/><ellipse cx="60" cy="34" rx="40" ry="8.5" fill="none" stroke="#c9913a" stroke-width="2"/></g>`,
   scarf:`<g class="acc"><path d="M84 52C96 48 106 56 109 70L104 86C100 74 94 64 82 62Z" fill="#ff7a59"/><path d="M102 60C116 50 134 48 148 54L146 64C132 60 118 63 106 72Z" fill="#ff7a59"/><path d="M114 56l2 9M126 52l1 9M138 52l-.5 9" stroke="#ffd23f" stroke-width="3.6" stroke-linecap="round"/><path d="M146 54l6-2M147 59l7 0M146 64l6 2" stroke="#f2603f" stroke-width="2.6" stroke-linecap="round"/><path d="M88 56l12 4M96 68l9 3" stroke="#ffd23f" stroke-width="3.6" stroke-linecap="round"/></g>`
 };
-const DUCK=`<svg viewBox="0 0 40 34" width="100%" height="100%" aria-hidden="true"><path d="M4 22C4 16 10 14 16 16C18 8 26 4 31 9C35 13 33 18 30 20C36 21 38 25 35 29C31 33 12 33 7 30C5 28 4 25 4 22Z" fill="#ffd23f"/><path d="M33 12L40 13L34 16Z" fill="#ff8a3d"/><circle cx="28" cy="11" r="1.8" fill="#1f2547"/><path d="M12 22C16 25 22 25 25 22" stroke="#f2b51f" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+const DUCK_G=`<path d="M4 22C4 16 10 14 16 16C18 8 26 4 31 9C35 13 33 18 30 20C36 21 38 25 35 29C31 33 12 33 7 30C5 28 4 25 4 22Z" fill="#ffd23f"/><path d="M33 12L40 13L34 16Z" fill="#ff8a3d"/><circle cx="28" cy="11" r="1.8" fill="#1f2547"/><path d="M12 22C16 25 22 25 25 22" stroke="#f2b51f" stroke-width="2" fill="none" stroke-linecap="round"/>`;
 const LOCK=`<svg viewBox="0 0 256 256" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M208,76H180V56A52,52,0,0,0,76,56V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Z"/></svg>`;
 const ACCS=[
   {id:"tenugui",test:()=>S.expenses.length>=1},
@@ -971,19 +972,19 @@ function checkUnlocks(){
   const msg=fresh.length>1?t("acc.newMany",fresh.length):t("acc.new",t("acc."+last));
   setTimeout(()=>{toast(msg);const b=document.querySelector(".wardrobe");if(b&&!calm())cheer(b);},quiet?600:3400);
 }
-function sideArt(){const el=document.querySelector(".side-art");if(el)el.innerHTML=`<div class="side-capy">${capyArt("side",{towel:true,wear:capyWear()==="duck"?null:capyWear()})}</div><span class="side-pool"></span>`;}
+function sideArt(){const el=document.querySelector(".side-art");if(el)el.innerHTML=`<div class="side-capy">${capyArt("side",{towel:true,wear:capyWear()})}</div><span class="side-pool"></span>`;}
 function openWardrobe(){
   const got=S.capy.got,wear=capyWear();
   const tile=(id,label,art,on,locked,hint)=>`<button type="button" class="acc-tile${locked?" locked":""}" ${locked?`aria-disabled="true"`:`data-wear="${id}"`} aria-pressed="${on}"><span class="acc-pic">${art}</span><span class="acc-name">${esc(label)}</span>${locked?`<span class="acc-hint">${LOCK}${esc(hint)}</span>`:""}</button>`;
   const head=w=>capyArt("pv",{wear:w,vb:"0 4 124 116"});
-  const body=`<p class="muted">${T("acc.sub")}</p><div class="acc-grid">${tile("none",t("acc.none"),head(null),!wear,false)}${ACCS.map(a=>{const ok=got.includes(a.id);return tile(a.id,t("acc."+a.id),a.id==="duck"?`<span class="acc-duck">${DUCK}</span>${head(null)}`:head(a.id),wear===a.id,!ok,t("acc.how."+a.id));}).join("")}</div><button class="btn ghost wide" type="button" data-close="1">${T("acc.done")}</button>`;
+  const body=`<p class="muted">${T("acc.sub")}</p><div class="acc-grid">${tile("none",t("acc.none"),head(null),!wear,false)}${ACCS.map(a=>{const ok=got.includes(a.id);return tile(a.id,t("acc."+a.id),head(a.id),wear===a.id,!ok,t("acc.how."+a.id));}).join("")}</div><button class="btn ghost wide" type="button" data-close="1">${T("acc.done")}</button>`;
   sheet(t("acc.title"),body);
 }
 function onsenArt(p){
   p=Math.max(0,Math.min(1,p||0));const lv=Math.max(.1,p);
   return `<div class="onsen ${lv>.3?"floating":"resting"}" style="--lvl:${lv.toFixed(3)}">
   <div class="water"><svg class="wave" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6Q12.5 0 25 6T50 6T75 6T100 6T125 6T150 6T175 6T200 6V12H0Z"/></svg></div><span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span><span class="ripple" aria-hidden="true"></span>${lv<=.3?`<span class="onsen-note">${T("cap.cozy")}</span>`:""}
-  <button type="button" class="capy" data-act="squish" aria-label="${esc(T("cap.squish"))}"><span class="capy-in">${capyArt("hero",{towel:lv<=.3,yuzu:lv>.6,wear:capyWear()==="duck"?null:capyWear()})}</span></button>${capyWear()==="duck"?`<span class="duck" aria-hidden="true">${DUCK}</span>`:""}
+  <button type="button" class="capy" data-act="squish" aria-label="${esc(T("cap.squish"))}"><span class="capy-in">${capyArt("hero",{towel:lv<=.3,yuzu:lv>.6,wear:capyWear()})}</span></button>
   <div class="water front" aria-hidden="true"><svg class="wave" viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6Q12.5 0 25 6T50 6T75 6T100 6T125 6T150 6T175 6T200 6V12H0Z"/></svg></div>
   <button type="button" class="wardrobe" data-act="wardrobe" aria-label="${T("acc.title")}: ${S.capy?S.capy.got.length:0}/${ACCS.length}"><svg viewBox="0 0 256 256" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M244,168,148,96l19.2-14.4A12,12,0,0,0,172,72a44,44,0,0,0-87.66-5.48,12,12,0,1,0,23.82,3,20,20,0,0,1,39.09-2.92L121,86.24c-.15.1-.29.21-.43.32L12,168a20,20,0,0,0,12,36H232a20,20,0,0,0,12-36ZM36,180l92-69,92,69Z"/></svg><span>${S.capy?S.capy.got.length:0}/${ACCS.length}</span></button>
   <span class="yuzu-drop" aria-hidden="true"><svg viewBox="0 0 30 30" width="100%" height="100%"><circle cx="15" cy="17" r="11" fill="#ffb21f"/><circle cx="11.5" cy="13.5" r="2.6" fill="#fff" opacity=".45"/><path d="M15 6.5c3-5 9-6 12-4-3 4-8 5-12 4z" fill="#3e9b57"/></svg></span>
@@ -1138,7 +1139,7 @@ function openSpend(p){
   focusFirst(p&&p.amount?"#spendForm button[type=submit]":"#expAmt");
 }
 function openExp(id){const e=S.expenses.find(x=>x.id===id);if(!e)return;sheetCtx={type:"exp",id};
-  sheet(t("sh.exp"),`<div class="stack"><div class="center"><div style="font-size:2.2rem">${catE(e.category)}</div><div style="font-size:2rem;font-weight:800">${money(num(e.amount))}</div><div class="muted">${esc(e.note||catLabel(e.category))} · ${fmtDW(parse(e.date))}</div></div>
+  sheet(t("sh.exp"),`<div class="stack"><div class="center"><div style="font-size:2.2rem">${catE(e.category)}</div><div style="font-size:2rem;font-weight:800">${money(num(e.amount))}</div><div class="muted">${esc(e.note||catLabel(e.category))} · ${expWhen(e,fmtDW)}</div></div>
   <button class="btn danger big" type="button" data-del="1">${T("b.delete")}</button><button class="btn ghost wide" type="button" data-close="1">${T("b.cancel")}</button></div>`);}
 function openBill(id){const b=id?S.bills.find(x=>x.id===id):null;sheetCtx={type:"bill",id:b?b.id:null};
   sheet(b?t("bi.edit"):t("bi.add"),`<form id="billForm" class="stack" autocomplete="off">
@@ -1350,7 +1351,7 @@ document.addEventListener("submit",ev=>{
   ev.preventDefault();const f=ev.target;if(tour)return;const c=sheetCtx||{};
   const upsert=(arr,obj,msgEdit,msgAdd)=>{if(c.id){Object.assign(S[arr].find(x=>x.id===c.id),obj);toast(t(msgEdit));}else{S[arr].push(Object.assign({id:uid()},obj));toast(t(msgAdd));}save();closeSheet();render();};
   if(f.id==="spendForm"){const amt=num($("#expAmt").value);if(amt<=0){toast(t("toast.amount"));$("#expAmt").focus();return;}
-    const note=($("#expNote")&&$("#expNote").value.trim())||"";const e={id:uid(),date:($("#expDate")&&$("#expDate").value)||iso(today()),amount:amt,category:selCat,note};S.expenses.push(e);rememberCat(note,selCat);save();dropYuzu=true;closeSheet();tab="today";render();toast(t("toast.logged",money(amt)),()=>{S.expenses=S.expenses.filter(x=>x.id!==e.id);save();render();});return;}
+    const note=($("#expNote")&&$("#expNote").value.trim())||"";const e={id:uid(),date:($("#expDate")&&$("#expDate").value)||iso(today()),amount:amt,category:selCat,note,ts:Date.now()};S.expenses.push(e);rememberCat(note,selCat);save();dropYuzu=true;closeSheet();tab="today";render();toast(t("toast.logged",money(amt)),()=>{S.expenses=S.expenses.filter(x=>x.id!==e.id);save();render();});return;}
   if(f.id==="billForm"){upsert("bills",{name:$("#bName").value.trim(),amount:num($("#bAmt").value),dueDay:Math.min(31,Math.max(1,parseInt($("#bDay").value)||1)),category:$("#bCat").value,autopay:$("#bAuto").checked},"bi.saved","bi.added");return;}
   if(f.id==="debtForm"){upsert("debts",{name:$("#dName").value.trim(),balance:num($("#dBal").value),apr:num($("#dApr").value),minPayment:num($("#dMin").value),dueDay:Math.min(31,Math.max(1,parseInt($("#dDay").value)||1))},"d.saved","d.added");return;}
   if(f.id==="goalForm"){upsert("goals",{name:$("#gName").value.trim(),target:num($("#gTarget").value),saved:num($("#gSaved").value),perPaycheck:num($("#gPer").value)},"s.saved","s.added");return;}
@@ -1399,7 +1400,7 @@ function quickAdd(){
   const qc=q.get("cat");const cat=(qc&&S.categories.includes(qc))?qc:(guessCat(note)||(S.categories.includes("other")?"other":null));
   if(!S.tourSeen||tour){pre=null;return false;}
   $("#modalRoot").innerHTML="";render();
-  if(q.get("auto")==="1"&&amount>0&&cat){const e={id:uid(),date:iso(today()),amount,category:cat,note};S.expenses.push(e);save();dropYuzu=true;render();
+  if(q.get("auto")==="1"&&amount>0&&cat){const e={id:uid(),date:iso(today()),amount,category:cat,note,ts:Date.now()};S.expenses.push(e);save();dropYuzu=true;render();
     toast(t("toast.logged",money(amount)),()=>{S.expenses=S.expenses.filter(x=>x.id!==e.id);save();render();});return true;}
   openSpend({amount:amount||"",note,cat});return true;
 }
