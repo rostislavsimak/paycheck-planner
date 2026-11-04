@@ -948,7 +948,7 @@ function sideArt(){const el=document.querySelector(".side-art");if(el)el.innerHT
 const SCENE_IMG=new Set(["autumn-1", "autumn-2", "autumn-3", "autumn-4", "autumn-5", "spring", "summer", "winter-1", "winter-2", "winter-3", "winter-4", "winter-5"]);
 const SEASON_OF=["winter","winter","spring","spring","spring","summer","summer","summer","autumn","autumn","autumn","winter"];
 const SCENE_ON=(()=>{try{const q=new URLSearchParams(location.search).get("scene");if(q==="0")localStorage.setItem("pp.scene","0");if(q==="1")localStorage.removeItem("pp.scene");return localStorage.getItem("pp.scene")!=="0";}catch(e){return true;}})();
-const SEASON_FORCE=(()=>{try{const q=new URLSearchParams(location.search).get("season");if(q)localStorage.setItem("pp.season",q);if(q==="auto")localStorage.removeItem("pp.season");return localStorage.getItem("pp.season");}catch(e){return null;}})();
+const SEASON_FORCE=(()=>{try{localStorage.removeItem("pp.season");return new URLSearchParams(location.search).get("season");}catch(e){return null;}})();
 let lastScene=null,lastStep=0,lastLeft=null;
 /* money left in 20% steps: 5 = 100-80% ... 1 = 20-0%; a missing picture falls back to the nearest step, then to the season's base */
 function sceneStep(p){return p>.8?5:p>.6?4:p>.4?3:p>.2?2:1;}
