@@ -343,6 +343,38 @@ nav.tabs button{border-radius:999px}
   .hero{padding:22px}
 }
 @media (min-width:1100px){nav.tabs button{border-radius:999px}}
+/* ---------- the onsen ---------- */
+.onsen::before,.onsen::after{content:"";position:absolute;bottom:-14px;width:74px;height:52px;border-radius:50% 50% 40% 40%;background:rgba(31,37,71,.14);pointer-events:none}
+.onsen::before{left:-18px}.onsen::after{right:-22px;width:60px;height:40px}
+.onsen .steam{position:absolute;bottom:calc(var(--wb) + var(--lvl)*var(--wr) + 4px);width:10px;height:22px;border-radius:50%;background:rgba(255,255,255,.7);filter:blur(3px);opacity:0;pointer-events:none;animation:steam 4.5s ease-in-out infinite}
+.onsen .steam.s1{left:30%}.onsen .steam.s2{left:66%;animation-delay:1.6s}.onsen .steam.s3{left:80%;animation-delay:3s}
+@keyframes steam{0%{opacity:0;transform:translateY(6px) scaleX(.8)}35%{opacity:.75}100%{opacity:0;transform:translateY(-34px) scaleX(1.4)}}
+.side-art .side-pool{position:absolute;left:18px;right:18px;bottom:8px;height:26px;border-radius:0 0 18px 18px;background:#5cc3cf;border-top:4px solid #8fe0e6;opacity:.95}
+.onsen{--wb:14px;--wr:62px;--ch:84px;position:relative;z-index:1;height:150px;margin-top:16px;border-radius:24px;background:rgba(255,255,255,.42);border:5px solid rgba(31,37,71,.18);overflow:hidden}
+.onsen .water{position:absolute;left:0;right:0;bottom:0;height:calc(var(--wb) + var(--lvl)*var(--wr));background:#5cc3cf;border-top:5px solid #8fe0e6;transition:height 1s cubic-bezier(.2,.8,.2,1)}
+.onsen .water.front{background:rgba(92,195,207,.4);border-top-color:rgba(143,224,230,.6);pointer-events:none;z-index:2}
+.onsen .capy{position:absolute;left:50%;bottom:max(2px,calc(var(--wb) + var(--lvl)*var(--wr) - var(--ch)*.3));width:calc(var(--ch)*1.15);height:var(--ch);margin-left:calc(var(--ch)*-.575);padding:0;border:0;background:transparent;cursor:pointer;z-index:1;border-radius:40%;transform:scale(calc(.86 + var(--lvl)*.14));transform-origin:50% 100%;transition:bottom 1s cubic-bezier(.2,.8,.2,1),transform 1s cubic-bezier(.2,.8,.2,1);-webkit-tap-highlight-color:transparent}
+.onsen .capy:focus-visible{outline:3px solid var(--on-sun);outline-offset:2px}
+.onsen .capy-in{display:block;width:100%;height:100%;transform-origin:50% 100%}
+.onsen .capy.sq .capy-in{animation:squish .6s cubic-bezier(.3,1.4,.5,1)}
+@keyframes squish{0%{transform:scale(1,1)}18%{transform:scale(1.15,.78)}45%{transform:scale(.94,1.08)}70%{transform:scale(1.03,.97)}100%{transform:scale(1,1)}}
+.onsen.still .water,.onsen.still .capy{transition:none}
+.onsen .ripple{position:absolute;left:22%;width:56px;height:14px;margin-left:-13px;bottom:calc(var(--wb) + var(--lvl)*var(--wr) - 7px);border:3px solid #fff;border-radius:50%;opacity:0;z-index:3;pointer-events:none}
+.onsen .yuzu-drop{position:absolute;left:22%;width:30px;height:30px;bottom:calc(var(--wb) + var(--lvl)*var(--wr) - 12px);opacity:0;z-index:3;pointer-events:none}
+.onsen .yuzu-drop.go{animation:yuzu 2.4s cubic-bezier(.4,0,.6,1) both}
+.onsen .ripple.go{animation:ripple 1.2s ease-out .85s both}
+@keyframes yuzu{0%{opacity:1;transform:translateY(-170px) rotate(0)}38%{transform:translateY(0) rotate(150deg)}50%{transform:translateY(5px) rotate(170deg)}62%{transform:translateY(0) rotate(180deg)}82%{opacity:1}100%{opacity:0;transform:translate(18px,1px) rotate(200deg)}}
+@keyframes ripple{0%{opacity:.8;transform:scale(.3)}100%{opacity:0;transform:scale(1.8)}}
+main.enter .onsen .water{animation:waterin 1.2s cubic-bezier(.2,.8,.2,1) .15s both}
+@keyframes waterin{from{height:var(--wb)}}
+main.enter .onsen .capy-yuzu{animation:sprout .8s cubic-bezier(.3,1.5,.5,1) .7s both;transform-origin:60px 22px}
+.side-art{position:relative}
+.side-capy{width:120px;height:104px;margin:0 auto}
+.side-art .zz{position:absolute;left:calc(50% + 46px);top:6px;font-family:var(--display);font-weight:800;color:var(--muted);font-size:1rem;animation:zz 3s ease-in-out infinite}
+.side-art .z2{left:calc(50% + 58px);top:-10px;font-size:.8rem;animation-delay:1.5s}
+@keyframes zz{0%,100%{opacity:0;transform:translateY(4px)}50%{opacity:.8;transform:translateY(-4px)}}
+@media (min-width:820px){.onsen{height:164px;--wr:66px;--ch:92px}}
+@media (min-width:1100px){.onsen{height:190px;--wr:80px;--ch:104px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -350,10 +382,7 @@ nav.tabs button{border-radius:999px}
 <header class="topbar"><div class="topbar-in">
   <div class="brand"><div class="logo" aria-hidden="true"><svg aria-hidden="true" viewBox="0 0 256 256" fill="currentColor"><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm8,24a64,64,0,1,0,64,64A64.07,64.07,0,0,0,128,64ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></svg></div><div>Paycheck Planner</div></div>
   <nav class="tabs" id="tabs" aria-label="Sections"></nav>
-  <div class="side-art" aria-hidden="true"><svg viewBox="0 0 200 170" width="100%"><path d="M100 110 C100 80 98 60 100 34" stroke="var(--leaf)" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M100 74 C80 52 56 58 52 68 C66 82 86 84 100 74z" fill="var(--leaf)"/><path d="M100 58 C118 36 142 40 146 50 C134 64 114 66 100 58z" fill="var(--leaf)" opacity=".85"/><path d="M100 40 C92 24 80 22 74 26 C78 38 90 44 100 40z" fill="var(--leaf)" opacity=".7"/>
-  <path d="M66 108 h68 l-8 50 q-1 8 -9 8 h-34 q-8 0 -9 -8z" fill="var(--lid)"/><rect x="60" y="100" width="80" height="14" rx="6" fill="var(--jar-2)"/>
-  <g transform="translate(150 26)"><g class="bee"><ellipse cx="-3" cy="-7" rx="6" ry="4" fill="#fff" opacity=".85"/><ellipse cx="0" cy="0" rx="9" ry="7" fill="#f6c343"/><path d="M-3 -6.5v13M3 -6v12" stroke="#3a2f22" stroke-width="2.4"/><circle cx="7" cy="-1" r="1.3" fill="#3a2f22"/></g></g></svg></div>
+  <div class="side-art" aria-hidden="true"></div>
 </div></header>
 <main id="view" tabindex="-1"></main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -535,18 +564,18 @@ FAQ.it=[
 
 <script>
 /* ===== Calm UI: extra labels, short tour, short guide ===== */
-Object.assign(I18N.en,{"t.day1":"1 day to payday","t.days":"{0} days to payday","t.left":"{0} left","se.palette":"Colors","pal.sage":"Sage","pal.blush":"Blush","pal.lavender":"Lavender","pal.classic":"Classic","nav.savings":"Goals","nav.more":"More","b.back":"← More","t.add":"+ Add spending","t.line":"{0} left · {1} days to payday","t.ok":"You're on track 👍","t.tight":"Go easy: essentials only.","t.over":"Pause extras until {0}.","t.bills":"Coming up","t.noBills":"No bills until payday ✓","t.more":"+{0} more","t.recent":"Latest spending","t.all":"Show all","t.less":"Show less","t.noSpend":"Nothing yet. Tap “+ Add spending” when you buy something.","sh.spend":"New spending","sh.morecats":"More categories","sh.details":"Add note or date","b.cancel":"Cancel","sh.del2":"Tap again to delete","sh.exp":"Purchase","bi.addBig":"+ Add bill","d.addBig":"+ Add debt","s.addBig":"+ New goal","tap":"Tap an item to change or delete it.","s.do":"I set aside {0}","s.did":"✓ Done this paycheck","d.adjust":"Adjust the plan","p.extraQ":"Different amount this time?","y.details":"Month by month","se.more":"Start over or example","m.paychecks":"What's left in the next paychecks","m.debts":"Cards, loans, debt-free date","m.year":"The whole year at a glance","m.settings":"Paycheck, currency, language, backup","m.help":"Short guide, questions, tutorial"});
-Object.assign(I18N.it,{"t.day1":"1 giorno allo stipendio","t.days":"{0} giorni allo stipendio","t.left":"{0} rimasti","se.palette":"Colori","pal.sage":"Salvia","pal.blush":"Cipria","pal.lavender":"Lavanda","pal.classic":"Classico","nav.savings":"Obiettivi","nav.more":"Altro","b.back":"← Altro","t.add":"+ Aggiungi spesa","t.line":"{0} rimasti · {1} giorni allo stipendio","t.ok":"Sei in linea 👍","t.tight":"Vai piano: solo l'essenziale.","t.over":"Stop spese extra fino al {0}.","t.bills":"In arrivo","t.noBills":"Nessuna bolletta fino allo stipendio ✓","t.more":"+ altre {0}","t.recent":"Ultime spese","t.all":"Mostra tutte","t.less":"Mostra meno","t.noSpend":"Ancora niente. Tocca «+ Aggiungi spesa» quando compri qualcosa.","sh.spend":"Nuova spesa","sh.morecats":"Altre categorie","sh.details":"Aggiungi nota o data","b.cancel":"Annulla","sh.del2":"Tocca di nuovo per eliminare","sh.exp":"Spesa","bi.addBig":"+ Aggiungi bolletta","d.addBig":"+ Aggiungi debito","s.addBig":"+ Nuovo obiettivo","tap":"Tocca una voce per modificarla o eliminarla.","s.do":"Ho messo da parte {0}","s.did":"✓ Fatto per questo stipendio","d.adjust":"Regola il piano","p.extraQ":"Importo diverso questa volta?","y.details":"Mese per mese","se.more":"Ricomincia o esempio","m.paychecks":"Quanto resta nei prossimi stipendi","m.debts":"Carte, prestiti, data senza debiti","m.year":"Tutto l'anno a colpo d'occhio","m.settings":"Stipendio, valuta, lingua, backup","m.help":"Guida breve, domande, tutorial"});
-Object.assign(I18N.es,{"t.day1":"1 día para el cobro","t.days":"{0} días para el cobro","t.left":"Quedan {0}","se.palette":"Colores","pal.sage":"Salvia","pal.blush":"Rosa","pal.lavender":"Lavanda","pal.classic":"Clásico","nav.paychecks":"Sueldos","nav.savings":"Metas","nav.more":"Más","b.back":"← Más","t.add":"+ Añadir gasto","t.line":"Quedan {0} · {1} días para el cobro","t.ok":"Vas bien 👍","t.tight":"Con calma: solo lo esencial.","t.over":"Sin extras hasta el {0}.","t.bills":"Próximos pagos","t.noBills":"Sin facturas hasta el cobro ✓","t.more":"+{0} más","t.recent":"Últimos gastos","t.all":"Ver todos","t.less":"Ver menos","t.noSpend":"Nada todavía. Toca «+ Añadir gasto» cuando compres algo.","sh.spend":"Nuevo gasto","sh.morecats":"Más categorías","sh.details":"Añadir nota o fecha","b.cancel":"Cancelar","sh.del2":"Toca otra vez para borrar","sh.exp":"Gasto","bi.addBig":"+ Añadir factura","d.addBig":"+ Añadir deuda","s.addBig":"+ Nueva meta","tap":"Toca un elemento para cambiarlo o borrarlo.","s.do":"He apartado {0}","s.did":"✓ Hecho este sueldo","d.adjust":"Ajustar el plan","p.extraQ":"¿Importe distinto esta vez?","y.details":"Mes a mes","se.more":"Empezar de cero o ejemplo","m.paychecks":"Lo que queda en los próximos sueldos","m.debts":"Tarjetas, préstamos, fecha sin deudas","m.year":"Todo el año de un vistazo","m.settings":"Sueldo, moneda, idioma, copia","m.help":"Guía breve, preguntas, tutorial"});
-Object.assign(I18N.fr,{"t.day1":"1 jour avant la paie","t.days":"{0} jours avant la paie","t.left":"Reste {0}","se.palette":"Couleurs","pal.sage":"Sauge","pal.blush":"Poudré","pal.lavender":"Lavande","pal.classic":"Classique","nav.savings":"Objectifs","nav.more":"Plus","b.back":"← Plus","t.add":"+ Ajouter une dépense","t.line":"Reste {0} · {1} jours avant la paie","t.ok":"Tout va bien 👍","t.tight":"Doucement : l'essentiel seulement.","t.over":"Stop extras jusqu'au {0}.","t.bills":"À venir","t.noBills":"Aucune facture avant la paie ✓","t.more":"+{0} autres","t.recent":"Dernières dépenses","t.all":"Tout voir","t.less":"Voir moins","t.noSpend":"Rien pour l'instant. Touchez « + Ajouter une dépense » après un achat.","sh.spend":"Nouvelle dépense","sh.morecats":"Plus de catégories","sh.details":"Ajouter note ou date","b.cancel":"Annuler","sh.del2":"Touchez encore pour supprimer","sh.exp":"Dépense","bi.addBig":"+ Ajouter une facture","d.addBig":"+ Ajouter une dette","s.addBig":"+ Nouvel objectif","tap":"Touchez un élément pour le modifier ou le supprimer.","s.do":"J'ai mis de côté {0}","s.did":"✓ Fait pour cette paie","d.adjust":"Ajuster le plan","p.extraQ":"Montant différent cette fois ?","y.details":"Mois par mois","se.more":"Recommencer ou exemple","m.paychecks":"Ce qui reste sur les prochaines paies","m.debts":"Cartes, crédits, date sans dettes","m.year":"L'année d'un coup d'œil","m.settings":"Paie, devise, langue, sauvegarde","m.help":"Guide court, questions, tutoriel"});
-Object.assign(I18N.de,{"t.day1":"1 Tag bis Zahltag","t.days":"{0} Tage bis Zahltag","t.left":"{0} übrig","se.palette":"Farben","pal.sage":"Salbei","pal.blush":"Puder","pal.lavender":"Lavendel","pal.classic":"Klassisch","nav.savings":"Ziele","nav.more":"Mehr","b.back":"← Mehr","t.add":"+ Ausgabe hinzufügen","t.line":"{0} übrig · {1} Tage bis Zahltag","t.ok":"Alles im Plan 👍","t.tight":"Langsam: nur das Nötigste.","t.over":"Keine Extras bis {0}.","t.bills":"Demnächst fällig","t.noBills":"Keine Rechnungen bis zum Zahltag ✓","t.more":"+{0} weitere","t.recent":"Letzte Ausgaben","t.all":"Alle zeigen","t.less":"Weniger","t.noSpend":"Noch nichts. Tippe „+ Ausgabe hinzufügen“, wenn du etwas kaufst.","sh.spend":"Neue Ausgabe","sh.morecats":"Mehr Kategorien","sh.details":"Notiz oder Datum","b.cancel":"Abbrechen","sh.del2":"Nochmal tippen zum Löschen","sh.exp":"Ausgabe","bi.addBig":"+ Rechnung hinzufügen","d.addBig":"+ Schuld hinzufügen","s.addBig":"+ Neues Ziel","tap":"Tippe einen Eintrag an, um ihn zu ändern oder zu löschen.","s.do":"{0} zurückgelegt","s.did":"✓ Erledigt für dieses Gehalt","d.adjust":"Plan anpassen","p.extraQ":"Diesmal anderer Betrag?","y.details":"Monat für Monat","se.more":"Neu beginnen oder Beispiel","m.paychecks":"Was in den nächsten Gehältern übrig bleibt","m.debts":"Karten, Kredite, schuldenfrei-Datum","m.year":"Das ganze Jahr im Blick","m.settings":"Gehalt, Währung, Sprache, Sicherung","m.help":"Kurzanleitung, Fragen, Tutorial"});
+Object.assign(I18N.en,{"cap.squish":"Squeeze the capybara","t.day1":"1 day to payday","t.days":"{0} days to payday","t.left":"{0} left","se.palette":"Colors","pal.sage":"Sage","pal.blush":"Blush","pal.lavender":"Lavender","pal.classic":"Classic","nav.savings":"Goals","nav.more":"More","b.back":"← More","t.add":"+ Add spending","t.line":"{0} left · {1} days to payday","t.ok":"You're on track 👍","t.tight":"Go easy: essentials only.","t.over":"Pause extras until {0}.","t.bills":"Coming up","t.noBills":"No bills until payday ✓","t.more":"+{0} more","t.recent":"Latest spending","t.all":"Show all","t.less":"Show less","t.noSpend":"Nothing yet. Tap “+ Add spending” when you buy something.","sh.spend":"New spending","sh.morecats":"More categories","sh.details":"Add note or date","b.cancel":"Cancel","sh.del2":"Tap again to delete","sh.exp":"Purchase","bi.addBig":"+ Add bill","d.addBig":"+ Add debt","s.addBig":"+ New goal","tap":"Tap an item to change or delete it.","s.do":"I set aside {0}","s.did":"✓ Done this paycheck","d.adjust":"Adjust the plan","p.extraQ":"Different amount this time?","y.details":"Month by month","se.more":"Start over or example","m.paychecks":"What's left in the next paychecks","m.debts":"Cards, loans, debt-free date","m.year":"The whole year at a glance","m.settings":"Paycheck, currency, language, backup","m.help":"Short guide, questions, tutorial"});
+Object.assign(I18N.it,{"cap.squish":"Strizza il capibara","t.day1":"1 giorno allo stipendio","t.days":"{0} giorni allo stipendio","t.left":"{0} rimasti","se.palette":"Colori","pal.sage":"Salvia","pal.blush":"Cipria","pal.lavender":"Lavanda","pal.classic":"Classico","nav.savings":"Obiettivi","nav.more":"Altro","b.back":"← Altro","t.add":"+ Aggiungi spesa","t.line":"{0} rimasti · {1} giorni allo stipendio","t.ok":"Sei in linea 👍","t.tight":"Vai piano: solo l'essenziale.","t.over":"Stop spese extra fino al {0}.","t.bills":"In arrivo","t.noBills":"Nessuna bolletta fino allo stipendio ✓","t.more":"+ altre {0}","t.recent":"Ultime spese","t.all":"Mostra tutte","t.less":"Mostra meno","t.noSpend":"Ancora niente. Tocca «+ Aggiungi spesa» quando compri qualcosa.","sh.spend":"Nuova spesa","sh.morecats":"Altre categorie","sh.details":"Aggiungi nota o data","b.cancel":"Annulla","sh.del2":"Tocca di nuovo per eliminare","sh.exp":"Spesa","bi.addBig":"+ Aggiungi bolletta","d.addBig":"+ Aggiungi debito","s.addBig":"+ Nuovo obiettivo","tap":"Tocca una voce per modificarla o eliminarla.","s.do":"Ho messo da parte {0}","s.did":"✓ Fatto per questo stipendio","d.adjust":"Regola il piano","p.extraQ":"Importo diverso questa volta?","y.details":"Mese per mese","se.more":"Ricomincia o esempio","m.paychecks":"Quanto resta nei prossimi stipendi","m.debts":"Carte, prestiti, data senza debiti","m.year":"Tutto l'anno a colpo d'occhio","m.settings":"Stipendio, valuta, lingua, backup","m.help":"Guida breve, domande, tutorial"});
+Object.assign(I18N.es,{"cap.squish":"Aprieta al capibara","t.day1":"1 día para el cobro","t.days":"{0} días para el cobro","t.left":"Quedan {0}","se.palette":"Colores","pal.sage":"Salvia","pal.blush":"Rosa","pal.lavender":"Lavanda","pal.classic":"Clásico","nav.paychecks":"Sueldos","nav.savings":"Metas","nav.more":"Más","b.back":"← Más","t.add":"+ Añadir gasto","t.line":"Quedan {0} · {1} días para el cobro","t.ok":"Vas bien 👍","t.tight":"Con calma: solo lo esencial.","t.over":"Sin extras hasta el {0}.","t.bills":"Próximos pagos","t.noBills":"Sin facturas hasta el cobro ✓","t.more":"+{0} más","t.recent":"Últimos gastos","t.all":"Ver todos","t.less":"Ver menos","t.noSpend":"Nada todavía. Toca «+ Añadir gasto» cuando compres algo.","sh.spend":"Nuevo gasto","sh.morecats":"Más categorías","sh.details":"Añadir nota o fecha","b.cancel":"Cancelar","sh.del2":"Toca otra vez para borrar","sh.exp":"Gasto","bi.addBig":"+ Añadir factura","d.addBig":"+ Añadir deuda","s.addBig":"+ Nueva meta","tap":"Toca un elemento para cambiarlo o borrarlo.","s.do":"He apartado {0}","s.did":"✓ Hecho este sueldo","d.adjust":"Ajustar el plan","p.extraQ":"¿Importe distinto esta vez?","y.details":"Mes a mes","se.more":"Empezar de cero o ejemplo","m.paychecks":"Lo que queda en los próximos sueldos","m.debts":"Tarjetas, préstamos, fecha sin deudas","m.year":"Todo el año de un vistazo","m.settings":"Sueldo, moneda, idioma, copia","m.help":"Guía breve, preguntas, tutorial"});
+Object.assign(I18N.fr,{"cap.squish":"Serre le capybara","t.day1":"1 jour avant la paie","t.days":"{0} jours avant la paie","t.left":"Reste {0}","se.palette":"Couleurs","pal.sage":"Sauge","pal.blush":"Poudré","pal.lavender":"Lavande","pal.classic":"Classique","nav.savings":"Objectifs","nav.more":"Plus","b.back":"← Plus","t.add":"+ Ajouter une dépense","t.line":"Reste {0} · {1} jours avant la paie","t.ok":"Tout va bien 👍","t.tight":"Doucement : l'essentiel seulement.","t.over":"Stop extras jusqu'au {0}.","t.bills":"À venir","t.noBills":"Aucune facture avant la paie ✓","t.more":"+{0} autres","t.recent":"Dernières dépenses","t.all":"Tout voir","t.less":"Voir moins","t.noSpend":"Rien pour l'instant. Touchez « + Ajouter une dépense » après un achat.","sh.spend":"Nouvelle dépense","sh.morecats":"Plus de catégories","sh.details":"Ajouter note ou date","b.cancel":"Annuler","sh.del2":"Touchez encore pour supprimer","sh.exp":"Dépense","bi.addBig":"+ Ajouter une facture","d.addBig":"+ Ajouter une dette","s.addBig":"+ Nouvel objectif","tap":"Touchez un élément pour le modifier ou le supprimer.","s.do":"J'ai mis de côté {0}","s.did":"✓ Fait pour cette paie","d.adjust":"Ajuster le plan","p.extraQ":"Montant différent cette fois ?","y.details":"Mois par mois","se.more":"Recommencer ou exemple","m.paychecks":"Ce qui reste sur les prochaines paies","m.debts":"Cartes, crédits, date sans dettes","m.year":"L'année d'un coup d'œil","m.settings":"Paie, devise, langue, sauvegarde","m.help":"Guide court, questions, tutoriel"});
+Object.assign(I18N.de,{"cap.squish":"Drück das Wasserschwein","t.day1":"1 Tag bis Zahltag","t.days":"{0} Tage bis Zahltag","t.left":"{0} übrig","se.palette":"Farben","pal.sage":"Salbei","pal.blush":"Puder","pal.lavender":"Lavendel","pal.classic":"Klassisch","nav.savings":"Ziele","nav.more":"Mehr","b.back":"← Mehr","t.add":"+ Ausgabe hinzufügen","t.line":"{0} übrig · {1} Tage bis Zahltag","t.ok":"Alles im Plan 👍","t.tight":"Langsam: nur das Nötigste.","t.over":"Keine Extras bis {0}.","t.bills":"Demnächst fällig","t.noBills":"Keine Rechnungen bis zum Zahltag ✓","t.more":"+{0} weitere","t.recent":"Letzte Ausgaben","t.all":"Alle zeigen","t.less":"Weniger","t.noSpend":"Noch nichts. Tippe „+ Ausgabe hinzufügen“, wenn du etwas kaufst.","sh.spend":"Neue Ausgabe","sh.morecats":"Mehr Kategorien","sh.details":"Notiz oder Datum","b.cancel":"Abbrechen","sh.del2":"Nochmal tippen zum Löschen","sh.exp":"Ausgabe","bi.addBig":"+ Rechnung hinzufügen","d.addBig":"+ Schuld hinzufügen","s.addBig":"+ Neues Ziel","tap":"Tippe einen Eintrag an, um ihn zu ändern oder zu löschen.","s.do":"{0} zurückgelegt","s.did":"✓ Erledigt für dieses Gehalt","d.adjust":"Plan anpassen","p.extraQ":"Diesmal anderer Betrag?","y.details":"Monat für Monat","se.more":"Neu beginnen oder Beispiel","m.paychecks":"Was in den nächsten Gehältern übrig bleibt","m.debts":"Karten, Kredite, schuldenfrei-Datum","m.year":"Das ganze Jahr im Blick","m.settings":"Gehalt, Währung, Sprache, Sicherung","m.help":"Kurzanleitung, Fragen, Tutorial"});
 
 const QUICK={
-en:[["Hi! 👋","Quick 1-minute tour. These are example numbers, not your money. Pick language, currency and colors:"],["Your one number","This is how much you can spend today and still reach payday. Orange = go easy. Red = stop extras."],["Spent something?","Tap here. Type the amount, pick a category, done. Five seconds."],["Bills take care of themselves","Bills due before payday show up here on their own. Tick them when paid."],["Everything else","Bills and Goals: add them once. Debts, year view, settings and help live in More."],["That's it!","Next: 3 quick questions about your paycheck. You can replay this tour anytime in More → Help."]],
-it:[["Ciao! 👋","Tour veloce, 1 minuto. Sono numeri d'esempio, non i tuoi soldi. Scegli lingua, valuta e colori:"],["Il tuo unico numero","È quanto puoi spendere oggi per arrivare allo stipendio. Arancione = vai piano. Rosso = stop extra."],["Hai speso qualcosa?","Tocca qui. Scrivi l'importo, scegli la categoria, fatto. Cinque secondi."],["Le bollette vanno da sole","Le bollette in scadenza prima dello stipendio compaiono qui da sole. Spuntale quando le paghi."],["Tutto il resto","Bollette e Obiettivi: li aggiungi una volta sola. Debiti, anno, impostazioni e aiuto sono in Altro."],["Tutto qui!","Ora 3 domande veloci sul tuo stipendio. Puoi rivedere il tour quando vuoi in Altro → Aiuto."]],
-es:[["¡Hola! 👋","Visita rápida, 1 minuto. Son números de ejemplo, no tu dinero. Elige idioma, moneda y colores:"],["Tu único número","Es lo que puedes gastar hoy y llegar al cobro. Naranja = con calma. Rojo = nada de extras."],["¿Has gastado algo?","Toca aquí. Escribe el importe, elige categoría y listo. Cinco segundos."],["Las facturas van solas","Las facturas que vencen antes del cobro aparecen aquí solas. Márcalas al pagarlas."],["Todo lo demás","Facturas y Metas: se añaden una sola vez. Deudas, año, ajustes y ayuda están en Más."],["¡Eso es todo!","Ahora 3 preguntas rápidas sobre tu sueldo. Puedes repetir la visita en Más → Ayuda."]],
-fr:[["Bonjour ! 👋","Visite rapide, 1 minute. Ce sont des chiffres d'exemple, pas votre argent. Choisissez langue, devise et couleurs :"],["Votre seul chiffre","C'est ce que vous pouvez dépenser aujourd'hui en tenant jusqu'à la paie. Orange = doucement. Rouge = stop extras."],["Une dépense ?","Touchez ici. Le montant, une catégorie, c'est fait. Cinq secondes."],["Les factures se gèrent seules","Les factures dues avant la paie apparaissent ici toutes seules. Cochez-les une fois payées."],["Tout le reste","Factures et Objectifs : à ajouter une seule fois. Dettes, année, réglages et aide sont dans Plus."],["C'est tout !","Maintenant 3 questions rapides sur votre paie. Revoir la visite : Plus → Aide."]],
-de:[["Hallo! 👋","Kurze Tour, 1 Minute. Das sind Beispielzahlen, nicht dein Geld. Wähle Sprache, Währung und Farben:"],["Deine eine Zahl","So viel kannst du heute ausgeben und kommst trotzdem bis zum Zahltag. Orange = langsam. Rot = keine Extras."],["Was ausgegeben?","Hier tippen. Betrag, Kategorie, fertig. Fünf Sekunden."],["Rechnungen laufen von selbst","Rechnungen, die vor dem Zahltag fällig sind, erscheinen hier von selbst. Abhaken, wenn bezahlt."],["Alles andere","Rechnungen und Ziele: einmal eintragen. Schulden, Jahr, Einstellungen und Hilfe findest du unter Mehr."],["Das war's!","Jetzt 3 kurze Fragen zu deinem Gehalt. Die Tour gibt's jederzeit unter Mehr → Hilfe."]]
+en:[["Hi! 👋","Quick 1-minute tour. These are example numbers, not your money. Pick language, currency and colors:"],["Your one number","This is how much you can spend today and still reach payday. Orange = go easy. Red = stop extras. The hot spring water goes down as you spend; tap the capybara to squeeze it."],["Spent something?","Tap here. Type the amount, pick a category, done. Five seconds."],["Bills take care of themselves","Bills due before payday show up here on their own. Tick them when paid."],["Everything else","Bills and Goals: add them once. Debts, year view, settings and help live in More."],["That's it!","Next: 3 quick questions about your paycheck. You can replay this tour anytime in More → Help."]],
+it:[["Ciao! 👋","Tour veloce, 1 minuto. Sono numeri d'esempio, non i tuoi soldi. Scegli lingua, valuta e colori:"],["Il tuo unico numero","È quanto puoi spendere oggi per arrivare allo stipendio. Arancione = vai piano. Rosso = stop extra. L'acqua dell'onsen scende man mano che spendi; tocca il capibara per strizzarlo."],["Hai speso qualcosa?","Tocca qui. Scrivi l'importo, scegli la categoria, fatto. Cinque secondi."],["Le bollette vanno da sole","Le bollette in scadenza prima dello stipendio compaiono qui da sole. Spuntale quando le paghi."],["Tutto il resto","Bollette e Obiettivi: li aggiungi una volta sola. Debiti, anno, impostazioni e aiuto sono in Altro."],["Tutto qui!","Ora 3 domande veloci sul tuo stipendio. Puoi rivedere il tour quando vuoi in Altro → Aiuto."]],
+es:[["¡Hola! 👋","Visita rápida, 1 minuto. Son números de ejemplo, no tu dinero. Elige idioma, moneda y colores:"],["Tu único número","Es lo que puedes gastar hoy y llegar al cobro. Naranja = con calma. Rojo = nada de extras. El agua del onsen baja cuando gastas; toca al capibara para apretarlo."],["¿Has gastado algo?","Toca aquí. Escribe el importe, elige categoría y listo. Cinco segundos."],["Las facturas van solas","Las facturas que vencen antes del cobro aparecen aquí solas. Márcalas al pagarlas."],["Todo lo demás","Facturas y Metas: se añaden una sola vez. Deudas, año, ajustes y ayuda están en Más."],["¡Eso es todo!","Ahora 3 preguntas rápidas sobre tu sueldo. Puedes repetir la visita en Más → Ayuda."]],
+fr:[["Bonjour ! 👋","Visite rapide, 1 minute. Ce sont des chiffres d'exemple, pas votre argent. Choisissez langue, devise et couleurs :"],["Votre seul chiffre","C'est ce que vous pouvez dépenser aujourd'hui en tenant jusqu'à la paie. Orange = doucement. Rouge = stop extras. L'eau de l'onsen baisse quand tu dépenses ; touche le capybara pour le serrer."],["Une dépense ?","Touchez ici. Le montant, une catégorie, c'est fait. Cinq secondes."],["Les factures se gèrent seules","Les factures dues avant la paie apparaissent ici toutes seules. Cochez-les une fois payées."],["Tout le reste","Factures et Objectifs : à ajouter une seule fois. Dettes, année, réglages et aide sont dans Plus."],["C'est tout !","Maintenant 3 questions rapides sur votre paie. Revoir la visite : Plus → Aide."]],
+de:[["Hallo! 👋","Kurze Tour, 1 Minute. Das sind Beispielzahlen, nicht dein Geld. Wähle Sprache, Währung und Farben:"],["Deine eine Zahl","So viel kannst du heute ausgeben und kommst trotzdem bis zum Zahltag. Orange = langsam. Rot = keine Extras. Das Wasser im Onsen sinkt, wenn du ausgibst; tippe aufs Wasserschwein, um es zu drücken."],["Was ausgegeben?","Hier tippen. Betrag, Kategorie, fertig. Fünf Sekunden."],["Rechnungen laufen von selbst","Rechnungen, die vor dem Zahltag fällig sind, erscheinen hier von selbst. Abhaken, wenn bezahlt."],["Alles andere","Rechnungen und Ziele: einmal eintragen. Schulden, Jahr, Einstellungen und Hilfe findest du unter Mehr."],["Das war's!","Jetzt 3 kurze Fragen zu deinem Gehalt. Die Tour gibt's jederzeit unter Mehr → Hilfe."]]
 };
 
 const GUIDE={
@@ -796,9 +825,9 @@ function vToday(){
     <span class="label">${T("t.safe")}</span>
     <div class="big">${money(Math.max(s.perDay,0))}</div>
     <div class="msg">${esc(msg)}</div>
-    </div>${jarArt(s.income>0?Math.max(0,s.left)/s.income:0)}</div>
+    </div></div>
     <div class="hero-chips" style="position:relative;z-index:1"><span class="hchip ink">${s.daysLeft===1?T("t.day1"):T("t.days",s.daysLeft)}</span><span class="hchip">${T("t.left",money(s.left))}</span></div>
-    <div class="bar ${st==="over"?"danger":st==="tight"?"warn":"safe"}" aria-hidden="true"><i style="width:${usedPct}%"></i></div>
+    ${onsenArt(s.income>0?Math.max(0,s.left)/s.income:0)}
   </section>
   <button class="btn primary big" id="addSpend" data-open="spend">${T("t.add")}</button>
   ${bucketBlock(s)}
@@ -813,23 +842,32 @@ function vToday(){
   </section>
   </div>`;
 }
-/* illustrated honey jar: fills with what's left of this paycheck */
-function jarArt(p){
-  p=Math.max(0,Math.min(1,p||0));const top=54,bot=138,lvl=Math.round(bot-(bot-top)*p);
-  return `<div class="jar" aria-hidden="true"><svg viewBox="0 0 120 150" width="100%" height="100%">
-  <defs><clipPath id="jarIn"><path d="M27 46q0-8 8-8h50q8 0 8 8v76q0 16-16 16H43q-16 0-16-16z"/></clipPath>
-  <linearGradient id="jarFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--jar)"/><stop offset="1" stop-color="var(--jar-2)"/></linearGradient></defs>
-  <g class="sprout"><path d="M60 26 C60 18 60 14 60 8" stroke="var(--leaf)" stroke-width="3" fill="none" stroke-linecap="round"/>
-  <path d="M60 15 C52 6 42 9 40 13 C46 18 54 19 60 15z" fill="var(--leaf)"/><path d="M60 11 C66 2 77 3 80 7 C75 13 66 14 60 11z" fill="var(--leaf)" opacity=".85"/></g>
-  <rect x="30" y="24" width="60" height="14" rx="6" fill="var(--lid)"/><rect x="34" y="27" width="52" height="3" rx="1.5" fill="#fff" opacity=".25"/>
-  <path d="M25 46q0-10 10-10h50q10 0 10 10v76q0 18-18 18H43q-18 0-18-18z" fill="var(--jar-glass)"/>
-  <g clip-path="url(#jarIn)"><g class="jar-level" style="--lvl:${lvl - bot}px"><path d="M20 ${bot} Q35 ${bot-6} 50 ${bot} T80 ${bot} T110 ${bot} V320 H20z" fill="url(#jarFill)"/>
-  <circle cx="45" cy="${bot+14}" r="6" fill="#fff" opacity=".28"/><circle cx="70" cy="${bot+22}" r="4" fill="#fff" opacity=".25"/><circle cx="58" cy="${bot+8}" r="3" fill="#fff" opacity=".3"/></g></g>
-  <path d="M25 46q0-10 10-10h50q10 0 10 10v76q0 18-18 18H43q-18 0-18-18z" fill="none" stroke="var(--jar-line)" stroke-width="3"/>
-  <rect x="33" y="50" width="7" height="58" rx="3.5" fill="#fff" opacity=".45"/>
-  <g transform="translate(96 30)"><g class="bee"><ellipse cx="-3" cy="-7" rx="6" ry="4" fill="#fff" opacity=".85"/><ellipse cx="4" cy="-8" rx="5" ry="3.5" fill="#fff" opacity=".7"/>
-  <ellipse cx="0" cy="0" rx="9" ry="7" fill="#f6c343"/><path d="M-3 -6.5v13M3 -6v12" stroke="#3a2f22" stroke-width="2.4"/><circle cx="7" cy="-1" r="1.3" fill="#3a2f22"/></g></g>
-  </svg></div>`;
+/* "L'Onsen del Capibara": the water level is what's left of this paycheck.
+   High water: it floats with a yuzu on its head. Low water: it sits on the bottom in a warm towel. Never sad. */
+function capyArt(id,o){
+  return `<svg viewBox="0 0 120 104" width="100%" height="100%" aria-hidden="true"><defs><clipPath id="cb-${id}"><rect x="12" y="16" width="96" height="96" rx="44"/></clipPath></defs>
+  <circle cx="30" cy="25" r="9" fill="#8c5a36"/><circle cx="90" cy="25" r="9" fill="#8c5a36"/>
+  <g clip-path="url(#cb-${id})"><rect x="12" y="16" width="96" height="96" rx="44" fill="#b07a4f"/>
+  ${o.towel?`<rect x="8" y="80" width="104" height="30" fill="#fff"/><rect x="8" y="88" width="104" height="5" fill="#ff9f9f"/>`:""}</g>
+  ${o.sleepy?`<path d="M34 51q6 4 12 0M74 51q6 4 12 0" stroke="#4a2e1c" stroke-width="3.2" fill="none" stroke-linecap="round"/>`:`<circle cx="40" cy="50" r="4.8" fill="#4a2e1c"/><circle cx="80" cy="50" r="4.8" fill="#4a2e1c"/><circle cx="41.6" cy="48.4" r="1.4" fill="#fff"/><circle cx="81.6" cy="48.4" r="1.4" fill="#fff"/>`}
+  <ellipse cx="31" cy="60" rx="7" ry="4" fill="#e8907a" opacity=".55"/><ellipse cx="89" cy="60" rx="7" ry="4" fill="#e8907a" opacity=".55"/>
+  <ellipse cx="60" cy="68" rx="24" ry="15" fill="#c9946a"/><ellipse cx="53" cy="64" rx="3.2" ry="2.3" fill="#4a2e1c"/><ellipse cx="67" cy="64" rx="3.2" ry="2.3" fill="#4a2e1c"/>
+  <path d="M55 73q5 3.5 10 0" stroke="#4a2e1c" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".75"/>
+  ${o.yuzu?`<g class="capy-yuzu"><circle cx="60" cy="13" r="10.5" fill="#ffb21f"/><circle cx="56.5" cy="9.5" r="2.6" fill="#fff" opacity=".45"/><path d="M60 3c3-5 9-6 12-4-3 4-8 5-12 4z" fill="#3e9b57"/></g>`:""}
+  </svg>`;
+}
+function onsenArt(p){
+  p=Math.max(0,Math.min(1,p||0));const lv=Math.max(.1,p);
+  return `<div class="onsen" style="--lvl:${lv.toFixed(3)}">
+  <div class="water"></div><span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span><span class="ripple" aria-hidden="true"></span>
+  <button type="button" class="capy" data-act="squish" aria-label="${esc(T("cap.squish"))}"><span class="capy-in">${capyArt("hero",{sleepy:lv<=.4,towel:lv<=.3,yuzu:lv>.6})}</span></button>
+  <div class="water front" aria-hidden="true"></div>
+  <span class="yuzu-drop" aria-hidden="true"><svg viewBox="0 0 30 30" width="100%" height="100%"><circle cx="15" cy="17" r="11" fill="#ffb21f"/><circle cx="11.5" cy="13.5" r="2.6" fill="#fff" opacity=".45"/><path d="M15 6.5c3-5 9-6 12-4-3 4-8 5-12 4z" fill="#3e9b57"/></svg></span>
+  </div>`;
+}
+function squish(el){
+  try{if(navigator.vibrate)navigator.vibrate(12);}catch(e){}
+  if(calm())return;el.classList.remove("sq");void el.offsetWidth;el.classList.add("sq");
 }
 function itemRow(i){return `<label class="item ${i.paid?"done":""}"><input type="checkbox" data-paid="${esc(i.key)}" ${i.paid?"checked":""}><span class="grow"><span class="title">${esc(i.name)}</span><span class="small muted">${fmtDW(i.date)}${i.autopay?`<span class="pill auto">${T("pill.autopay")}</span>`:""}</span></span><span class="amt">${money(i.amount)}</span></label>`;}
 function bucketBlock(s){
@@ -1076,12 +1114,13 @@ function endTour(mode){
 }
 
 /* ---------- render ---------- */
-let lastTab=null,prevSafe=null,prevDemo=null,lastPaid=new Set();
+let dropYuzu=false,lastTab=null,prevSafe=null,prevDemo=null,lastPaid=new Set();
 function render(){
   document.documentElement.lang=lang();applyTheme();renderTabs();
   const v={today:vToday,bills:vBills,savings:vSavings,more:vMore,paychecks:vPaychecks,debts:vDebts,year:vYear,settings:vSettings,help:vHelp}[tab]||vToday;
   const mv=$("#view");const same=lastTab===tab;
-  const old={bars:same?[...mv.querySelectorAll(".bar i")].map(i=>i.style.width):[],
+  const ons=mv.querySelector(".onsen");
+  const old={lvl:same&&ons?ons.style.getPropertyValue("--lvl"):"",bars:same?[...mv.querySelectorAll(".bar i")].map(i=>i.style.width):[],
     paid:lastPaid,
     goals:new Set([...mv.querySelectorAll("[data-save-goal]:not(.soft)")].map(b=>b.dataset.saveGoal))};
   mv.dataset.view=tab;mv.innerHTML=v();lastTab=tab;
@@ -1095,7 +1134,13 @@ function motion(mv,same,old){
   if(prevDemo!==demo){prevSafe=null;prevDemo=demo;}
   const hero=tab==="today"?mv.querySelector(".hero .big"):null;
   const safeNow=hero?Math.max(summary(currentPeriod()).perDay,0):null;
+  const ons=mv.querySelector(".onsen");const drop=dropYuzu;dropYuzu=false;
   if(calm()){if(safeNow!==null)prevSafe=safeNow;return;}
+  if(ons){
+    const to=ons.style.getPropertyValue("--lvl");
+    if(old.lvl&&old.lvl!==to){ons.classList.add("still");ons.style.setProperty("--lvl",old.lvl);void ons.offsetWidth;ons.classList.remove("still");ons.style.setProperty("--lvl",to);}
+    if(drop){const fx=ons.querySelectorAll(".yuzu-drop,.ripple");fx.forEach(e=>e.classList.add("go"));setTimeout(()=>fx.forEach(e=>e.classList.remove("go")),2600);}
+  }
   if(!same){
     mv.classList.remove("enter");void mv.offsetWidth;let i=0;
     [...mv.children].forEach(el=>{if(el.classList.contains("col"))[...el.children].forEach(c=>c.style.setProperty("--i",i++));else el.style.setProperty("--i",i++);});
@@ -1133,6 +1178,7 @@ document.addEventListener("click",ev=>{
     else endTour(ds.tour);
     return;}
   if(ds.palette){S.settings.palette=ds.palette;if(tour){tour.real.settings.palette=ds.palette;showStep();}else{save();render();}const b=document.querySelector('.swatch[data-palette="'+ds.palette+'"]');if(b)b.focus({preventScroll:true});return;}
+  if(ds.act==="squish"){squish(el);return;}
   if(tour)return;
   if(ds.copy){const i=document.getElementById(ds.copy);if(!i)return;const done=()=>toast(t("al.copied"));if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(i.value).then(done,()=>{i.select();document.execCommand("copy");done();});else{i.select();document.execCommand("copy");done();}return;}
   if(ds.close){closeSheet();return;}
@@ -1177,7 +1223,7 @@ document.addEventListener("submit",ev=>{
   ev.preventDefault();const f=ev.target;if(tour)return;const c=sheetCtx||{};
   const upsert=(arr,obj,msgEdit,msgAdd)=>{if(c.id){Object.assign(S[arr].find(x=>x.id===c.id),obj);toast(t(msgEdit));}else{S[arr].push(Object.assign({id:uid()},obj));toast(t(msgAdd));}save();closeSheet();render();};
   if(f.id==="spendForm"){const amt=num($("#expAmt").value);if(amt<=0){toast(t("toast.amount"));$("#expAmt").focus();return;}
-    const note=($("#expNote")&&$("#expNote").value.trim())||"";const e={id:uid(),date:($("#expDate")&&$("#expDate").value)||iso(today()),amount:amt,category:selCat,note};S.expenses.push(e);rememberCat(note,selCat);save();closeSheet();tab="today";render();toast(t("toast.logged",money(amt)),()=>{S.expenses=S.expenses.filter(x=>x.id!==e.id);save();render();});return;}
+    const note=($("#expNote")&&$("#expNote").value.trim())||"";const e={id:uid(),date:($("#expDate")&&$("#expDate").value)||iso(today()),amount:amt,category:selCat,note};S.expenses.push(e);rememberCat(note,selCat);save();dropYuzu=true;closeSheet();tab="today";render();toast(t("toast.logged",money(amt)),()=>{S.expenses=S.expenses.filter(x=>x.id!==e.id);save();render();});return;}
   if(f.id==="billForm"){upsert("bills",{name:$("#bName").value.trim(),amount:num($("#bAmt").value),dueDay:Math.min(31,Math.max(1,parseInt($("#bDay").value)||1)),category:$("#bCat").value,autopay:$("#bAuto").checked},"bi.saved","bi.added");return;}
   if(f.id==="debtForm"){upsert("debts",{name:$("#dName").value.trim(),balance:num($("#dBal").value),apr:num($("#dApr").value),minPayment:num($("#dMin").value),dueDay:Math.min(31,Math.max(1,parseInt($("#dDay").value)||1))},"d.saved","d.added");return;}
   if(f.id==="goalForm"){upsert("goals",{name:$("#gName").value.trim(),target:num($("#gTarget").value),saved:num($("#gSaved").value),perPaycheck:num($("#gPer").value)},"s.saved","s.added");return;}
@@ -1226,12 +1272,13 @@ function quickAdd(){
   const qc=q.get("cat");const cat=(qc&&S.categories.includes(qc))?qc:(guessCat(note)||(S.categories.includes("other")?"other":null));
   if(!S.tourSeen||tour){pre=null;return false;}
   $("#modalRoot").innerHTML="";render();
-  if(q.get("auto")==="1"&&amount>0&&cat){const e={id:uid(),date:iso(today()),amount,category:cat,note};S.expenses.push(e);save();render();
+  if(q.get("auto")==="1"&&amount>0&&cat){const e={id:uid(),date:iso(today()),amount,category:cat,note};S.expenses.push(e);save();dropYuzu=true;render();
     toast(t("toast.logged",money(amount)),()=>{S.expenses=S.expenses.filter(x=>x.id!==e.id);save();render();});return true;}
   openSpend({amount:amount||"",note,cat});return true;
 }
 window.addEventListener("hashchange",()=>{if(/^#add\b/.test(location.hash))quickAdd();});
 
+document.querySelector(".side-art").innerHTML=`<div class="side-capy">${capyArt("side",{sleepy:true,towel:true})}</div><span class="side-pool"></span><span class="zz">z</span><span class="zz z2">z</span>`;
 render();
 if(!S.tourSeen)startTour();
 else if(!S.onboarded){wz=0;renderWizard();}
