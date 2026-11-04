@@ -694,7 +694,7 @@ FAQ.es[8]=["¿Cómo empiezo de cero?","Más → Ajustes → Borrar todo (toca do
 FAQ.fr[8]=["Comment tout recommencer ?","Plus → Réglages → Tout effacer (touchez deux fois). Téléchargez d'abord une sauvegarde si besoin."];
 FAQ.de[8]=["Wie fange ich neu an?","Mehr → Einstellungen → Alles löschen (zweimal tippen). Lade vorher eine Sicherung herunter, falls du die Daten noch brauchst."];
 /* honey palette label */
-Object.assign(I18N.en,{"scene.left": "left"});Object.assign(I18N.it,{"scene.left": "rimasti"});Object.assign(I18N.es,{"scene.left": "quedan"});Object.assign(I18N.fr,{"scene.left": "restants"});Object.assign(I18N.de,{"scene.left": "übrig"});
+Object.assign(I18N.en,{"scene.left": "left"});Object.assign(I18N.it,{"scene.left": "rimasti"});Object.assign(I18N.es,{"scene.left": "quedan"});Object.assign(I18N.fr,{"scene.left": "restants"});Object.assign(I18N.de,{"scene.left": "übrig"});Object.assign(I18N.en,{"cozy.winter": "Cozy and warm till payday", "cozy.autumn": "Snug under the blanket till payday", "cozy.spring": "Resting among the flowers till payday", "cozy.summer": "Cool and calm till payday"});Object.assign(I18N.it,{"cozy.winter": "Al calduccio fino allo stipendio", "cozy.autumn": "Sotto la coperta fino allo stipendio", "cozy.spring": "Tra i fiori fino allo stipendio", "cozy.summer": "Fresco e sereno fino allo stipendio"});Object.assign(I18N.es,{"cozy.winter": "Calentito hasta el cobro", "cozy.autumn": "Bajo la mantita hasta el cobro", "cozy.spring": "Entre flores hasta el cobro", "cozy.summer": "Fresquito hasta el cobro"});Object.assign(I18N.fr,{"cozy.winter": "Au chaud jusqu'à la paie", "cozy.autumn": "Sous la couverture jusqu'à la paie", "cozy.spring": "Parmi les fleurs jusqu'à la paie", "cozy.summer": "Au frais jusqu'à la paie"});Object.assign(I18N.de,{"cozy.winter": "Warm eingepackt bis Zahltag", "cozy.autumn": "Unter der Decke bis Zahltag", "cozy.spring": "Zwischen Blumen bis Zahltag", "cozy.summer": "Kühl und entspannt bis Zahltag"});
 Object.assign(I18N.en,{"cap.cozy": "Cozy and warm till payday"});Object.assign(I18N.it,{"cap.cozy": "Al calduccio fino allo stipendio"});Object.assign(I18N.es,{"cap.cozy": "Calentito hasta el cobro"});Object.assign(I18N.fr,{"cap.cozy": "Au chaud jusqu'à la paie"});Object.assign(I18N.de,{"cap.cozy": "Warm eingepackt bis Zahltag"});
 Object.assign(I18N.en,{"pal.honey":"Sunny"});Object.assign(I18N.it,{"pal.honey":"Sole"});Object.assign(I18N.es,{"pal.honey":"Sol"});Object.assign(I18N.fr,{"pal.honey":"Soleil"});Object.assign(I18N.de,{"pal.honey":"Sonne"});
 /* motion setting labels */
@@ -1012,7 +1012,7 @@ function sceneArt(p,left){
   <div class="scene-bg sb-${k}${prev?" in":""}"></div>${prev?`<div class="scene-bg sb-${prev} out"></div>`:""}
   <div class="scene-fx" aria-hidden="true">${sceneFx(se)}${glints}</div>
   <div class="scene-money"><span class="sm-amt">${money(Math.max(0,from!==null&&!calm()?from:left))}</span><span class="sm-lbl">${T("scene.left")}</span></div>
-  ${step===1?`<span class="scene-note${prev?" in":""}">${T("cap.cozy")}</span>`:""}
+  ${step===1?`<span class="scene-note${prev?" in":""}">${T("cozy."+se)}</span>`:""}
   </div>`;
 }
 function onsenArt(p){
